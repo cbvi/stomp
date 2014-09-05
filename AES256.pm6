@@ -2,7 +2,7 @@ use Inline::Perl5;
 
 class AES256;
 
-my $ip5 = p5_init_perl();
+my $ip5 = Inline::Perl5.new();
 
 $ip5.run('use strict; use warnings;');
 $ip5.run('use Crypt::CBC; use MIME::Base64;');
@@ -42,6 +42,10 @@ my Str $sub_randombytes = '
 $ip5.run($sub_encrypt);
 $ip5.run($sub_decrypt);
 $ip5.run($sub_randombytes);
+
+END {
+    $ip5.DESTROY;
+}
 
 method Encrypt(Str $key, Str $data) returns Str {
     return $ip5.call('main::encrypt', $key, $data);
