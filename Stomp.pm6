@@ -12,12 +12,15 @@ method Command(Str $command, Str @options) {
     given $command {
         when <add> { self.Add(@options) }
         when <get> { self.Get(@options) }
+        when <find> { self.find(@options) }
         default { self.Usage() }
     }
 }
 
 method Add(Str @options) {
+    self.Usage("must specify sitename and username") if @options.elems < 2;
     my $sitename = @options.shift;
+    my $username = @options.shift;
     my $password = @options.shift // AES256.RandomBytes(16);
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
@@ -58,6 +61,21 @@ method Get(Str @options) {
     say $datajson<password>;
 }
 
+method find(Str @options) {
+    my $search = @options.shift;
+
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+
+    my $json = from-json(AES256.Decrypt($deckey, readIndex()));
+
+    for $json.kv -> $key, $value {
+        if $key ~~ / $search  / {
+            say $key;
+        }
+    }
+}
+
 method Setup {
     return if $stompDir.IO.d;
 
@@ -83,7 +101,8 @@ method Setup {
     }
 }
 
-method Usage() {
+method Usage(Str $proclaim?) {
+    say $proclaim if $proclaim;
     say "XXX TODO";
     exit(0);
 }
