@@ -27,6 +27,7 @@ method Add(Str @options) {
 
     my %data =
         sitename => $sitename,
+        username => $username,
         password => $password
     ;
 
@@ -71,7 +72,10 @@ method find(Str @options) {
 
     for $json.kv -> $key, $value {
         if $key ~~ / $search  / {
-            say $key;
+            my $encdata = readEncryptedFile($value);
+            my $decdata = AES256.Decrypt($deckey, $encdata);
+            my $data = from-json($decdata);
+            say "$key\t ({$data<username>})";;
         }
     }
 }
