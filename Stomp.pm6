@@ -12,7 +12,8 @@ method Command(Str $command, Str @options) {
     given $command {
         when <add> { self.Add(@options) }
         when <get> { self.Get(@options) }
-        when <find> { self.find(@options) }
+        when <find> { self.Find(@options) }
+        when <edit> { self.Edit(@options) }
         default { self.Usage() }
     }
 }
@@ -21,7 +22,7 @@ method Add(Str @options) {
     self.Usage("must specify sitename and username") if @options.elems < 2;
     my $sitename = @options.shift;
     my $username = @options.shift;
-    my $password = @options.shift // AES256.RandomBytes(16);
+    my $password = @options.shift // AES256.RandomBytes(16).chomp();
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
 
@@ -47,6 +48,52 @@ method Add(Str @options) {
     say $password;
 }
 
+method Edit(Str @options) {
+    self.Usage("must specify sitename") if @options.elems < 1;
+    my $sitename = @options.shift;
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+
+    my $json = from-json(AES256.Decrypt($deckey, readIndex()));
+
+    err("cannot find $sitename") if not $json{$sitename} :exists;
+
+    my $filename = $json{$sitename};
+
+    my $encdata = readEncryptedFile($filename);
+    my $decdata = AES256.Decrypt($deckey, $encdata);
+    my $data = from-json($decdata);
+
+    header($data<sitename>);
+
+    for $data.kv -> $key, $value {
+        next if $key eq "sitename";
+        my $newval = prompt("$key [$value]: ");
+        $newval = $value if $newval eq "";
+        $data{$key} = $newval;
+    }
+    while (askYesOrNo("add a new field?", :no)) {
+        my $name = prompt("new field: ");
+        next if $name eq "";
+        if $data{$name} :exists {
+            msg("'$name' field already exists");
+            next;
+        }
+        my $value = prompt("$name: ");
+        $data{$name} = $value;
+    }
+
+    say '';
+    msg("updating...");
+    for $data.kv -> $key, $value {
+        say "$key: $value";
+    }
+
+    $encdata = AES256.Encrypt($deckey, to-json($data));
+    writeEncryptedFile($filename, $encdata);
+    msg("updated $sitename");
+}
+
 method Get(Str @options) {
     self.Usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
@@ -68,7 +115,7 @@ method Get(Str @options) {
     }
 }
 
-method find(Str @options) {
+method Find(Str @options) {
     my $search = @options.shift;
 
     my $enckey = readKey();
@@ -132,7 +179,7 @@ sub readKey {
 sub writeEncryptedFile(Str $filename, Str $data) {
     my $fh = xOpen("$stompDir/data/$filename");
     xWrite($fh, $data);
-    xChmod(0o400, "$stompDir/data/$filename");
+    xChmod(0o600, "$stompDir/data/$filename");
 }
 
 sub readEncryptedFile(Str $filename) {
@@ -156,7 +203,7 @@ sub getPassword(Bool :$confirm?) {
     my Str $p1 = "";
     my Str $p2 = "";
     while ($p1 eq "" || ($confirm && $p1 ne $p2)) {
-        $p1 = prompt("Password: ");
+        $p1 = prompt("Master password: ");
         return $p1 if not $confirm;
         return $p1 if $p1 eq prompt("Confirm: ");
         msg("Passwords did not match, try again");
@@ -179,8 +226,29 @@ sub xWrite(IO::Handle $fh, Str $text) {
     $fh.print($text) or panic("could not write to {$fh.path}");
 }
 
+sub xClose(IO::Handle $fh) {
+    $fh.close();
+}
+
 sub xSlurp(Str $file) {
     return slurp($file) or panic("could not slurp $file");
+}
+
+sub askYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
+    panic("must specify a default") if not $yes and not $no;
+    panic("both yes and no cannot be the default") if $yes and $no;
+    my $default = $yes ?? "Y" !! "N";
+    my $other = $yes ?? "n" !! "y";
+    my $input = prompt("$question [$other/$default]: ");
+    $input = $default if $input eq "";
+    $input .= uc;
+    $input .= substr(0, 1);
+    if $input ne any('Y', 'N') {
+        msg("answer (Y)es or (N)o");
+        return askYesOrNo($question, :$yes, :$no);
+    }
+    return False if $input eq 'N';
+    return True if $input eq 'Y';
 }
 
 sub header(Str $hdr) {
