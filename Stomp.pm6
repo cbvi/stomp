@@ -14,6 +14,7 @@ method Command(Str $command, Str @options) {
         when <get> { self.Get(@options) }
         when <find> { self.Find(@options) }
         when <edit> { self.Edit(@options) }
+        when <list> { self.List(@options) }
         when <gen> { self.Generate(@options) }
         when <x> | <clip> { self.Clip(@options) }
         default { self.Usage() }
@@ -117,6 +118,38 @@ method Get(Str @options) {
     }
 }
 
+method Find(Str @options) {
+    my $search = @options.shift;
+
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+
+    my $json = from-json(AES256.Decrypt($deckey, readIndex()));
+
+    for $json.kv -> $key, $value {
+        if $key ~~ / $search  / {
+            my $encdata = readEncryptedFile($value);
+            my $decdata = AES256.Decrypt($deckey, $encdata);
+            my $data = from-json($decdata);
+            say "$key\t ({$data<username>})";
+        }
+    }
+}
+
+method List(Str @options) {
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+
+    my $data = from-json(AES256.Decrypt($deckey, readIndex()));
+
+    for $data.kv -> $key, $value {
+        my $encdata = readEncryptedFile($value);
+        my $decdata = AES256.Decrypt($deckey, $encdata);
+        my $site = from-json($decdata);
+        say "$key\t ({$site<username>})";
+    }
+}
+
 method Clip(Str @options) {
     self.Usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
@@ -134,24 +167,6 @@ method Clip(Str @options) {
     my $datajson = from-json($decdata);
 
     say $datajson<password>;
-}
-
-method Find(Str @options) {
-    my $search = @options.shift;
-
-    my $enckey = readKey();
-    my $deckey = AES256.Decrypt(getPassword(), $enckey);
-
-    my $json = from-json(AES256.Decrypt($deckey, readIndex()));
-
-    for $json.kv -> $key, $value {
-        if $key ~~ / $search  / {
-            my $encdata = readEncryptedFile($value);
-            my $decdata = AES256.Decrypt($deckey, $encdata);
-            my $data = from-json($decdata);
-            say "$key\t ({$data<username>})";;
-        }
-    }
 }
 
 method Generate(Str @options) {
