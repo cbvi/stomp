@@ -7,6 +7,29 @@ my $prog = "Stomp";
 my IO::Path $stompDir .= new(%*ENV<HOME> ~ "/.stomp");
 my Str $stompKey = "$stompDir/keys/stompkey";
 
+method Command(Str $command, Str @options) {
+    given $command {
+        when <add> { self.Add(@options) }
+        default { self.Usage() }
+    }
+}
+
+method Add(Str @options) {
+    my $sitename = @options.shift;
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+    my $data = "Sitename: $sitename";
+    my $filename = hashFilename($sitename, $deckey);
+    my $encdata = AES256.Encrypt($deckey, $data);
+    writeEncryptedFile($filename, $encdata);
+}
+
+method Get(Str @options) {
+    my $sitename = @options.shift;
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+}
+
 method Setup {
     return if $stompDir.d;
 
@@ -19,6 +42,8 @@ method Setup {
             or panic("could not set permissions on $stompDir");
         mkdir("$stompDir/keys")
             or panic("could not create $stompDir/keys");
+        mkdir("$stompDir/data")
+            or panic("could not create $stompDir/data");
         msg("Let's begin");
 
         {
@@ -27,8 +52,12 @@ method Setup {
         }
 
         msg("All done. You can now use $prog. Have fun.");
-        
     }
+}
+
+method Usage() {
+    say "XXX TODO";
+    exit(0);
 }
 
 sub writeKey(Str $encdata) {
@@ -42,8 +71,22 @@ sub writeKey(Str $encdata) {
         or panic("could not permissions on $stompDir/keys");
 }
 
-sub readkey {
+sub readKey {
     return slurp($stompKey) or die("could not read $stompKey");
+}
+
+sub writeEncryptedFile(Str $filename, Str $data) {
+    my $fh = open("$stompDir/data/$filename", :w);
+    $fh.print($data);
+    chmod(0o400, "$stompDir/data/$filename");
+}
+
+sub readEncryptedFile(Str $filename) {
+    return slurp("$stompDir/data/$filename");
+}
+
+sub hashFilename(Str $filename, Str $key) {
+    return AES256.sha256sum($filename ~ $key);
 }
 
 sub getPassword(Bool :$confirm?) {

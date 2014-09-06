@@ -6,6 +6,7 @@ my $ip5 = Inline::Perl5.new();
 
 $ip5.run('use strict; use warnings;');
 $ip5.run('use Crypt::CBC; use MIME::Base64;');
+$ip5.run('use Digest::SHA qw(sha256_hex);');
 
 my Str $sub_encrypt = '
     sub encrypt {
@@ -39,9 +40,18 @@ my Str $sub_randombytes = '
         return encode_base64( Crypt::CBC->random_bytes($len) );
     }';
 
+my Str $sub_sha256sum = '
+    sub sha256sum {
+        my $data = shift;
+        return sha256_hex($data);
+    }';
+
 $ip5.run($sub_encrypt);
 $ip5.run($sub_decrypt);
 $ip5.run($sub_randombytes);
+$ip5.run($sub_sha256sum);
+
+$ip5.run("\n\n1;");
 
 END {
     $ip5.DESTROY;
@@ -57,4 +67,8 @@ method Decrypt(Str $key, Str $data) returns Str {
 
 method RandomBytes(Int $len) {
     return $ip5.call('main::randombytes', $len);
+}
+
+method sha256sum(Str $data) {
+    return $ip5.call('main::sha256sum', $data);
 }
