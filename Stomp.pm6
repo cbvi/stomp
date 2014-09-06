@@ -18,18 +18,29 @@ method Command(Str $command, Str @options) {
 
 method Add(Str @options) {
     my $sitename = @options.shift;
+    my $password = @options.shift // AES256.RandomBytes(16);
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
-    my $data = "Sitename: $sitename";
+
+    my %data =
+        sitename => $sitename,
+        password => $password
+    ;
+
+    my $datajson = to-json(%data);
+
     my $filename = AES256.sha256sum(AES256.RandomBytes(16));
-    my $encdata = AES256.Encrypt($deckey, $data);
+    my $encdata = AES256.Encrypt($deckey, $datajson);
     writeEncryptedFile($filename, $encdata);
 
-    my $json = AES256.Decrypt($deckey, readIndex());
-    my $index = from-json($json);
+    my $indexjson = AES256.Decrypt($deckey, readIndex());
+    my $index = from-json($indexjson);
     $index{$sitename} = $filename;
-    my $encjson = AES256.Encrypt($deckey, to-json($index));
-    writeIndex($encjson);
+    my $encindex = AES256.Encrypt($deckey, to-json($index));
+    writeIndex($encindex);
+
+    header($sitename);
+    say $password;
 }
 
 method Get(Str @options) {
@@ -42,7 +53,9 @@ method Get(Str @options) {
 
     my $encdata = readEncryptedFile($filename);
     my $decdata = AES256.Decrypt($deckey, $encdata);
-    say $decdata;
+    my $datajson = from-json($decdata);
+    header($datajson<sitename>);
+    say $datajson<password>;
 }
 
 method Setup {
