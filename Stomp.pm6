@@ -231,7 +231,12 @@ method Setup {
 
 method Usage(Str $proclaim?) {
     msg($proclaim) if $proclaim;
-    say "XXX TODO";
+    say "$*PROGRAM add sitename username [password]";
+    say "$*PROGRAM get sitename";
+    say "$*PROGRAM find sitename";
+    say "$*PROGRAM edit sitename";
+    say "$*PROGRAM gen [a = alphanumerical|s = include symbols] [length]";
+    say "$*PROGRAM [x|clip] sitename";
     exit(0);
 }
 
