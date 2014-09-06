@@ -201,6 +201,8 @@ method Generate(Str @options) {
         $gend ~= $s.comb( / <$sym> /).join();
     }
 
+    $ur.close();
+
     say $gend;
 }
 
@@ -243,6 +245,7 @@ method Usage(Str $proclaim?) {
 sub writeKey(Str $encdata) {
     my $fh = xOpen($stompKey);
     xWrite($fh, $encdata);
+    xClose($fh);
     
     xChmod(0o0400, $stompKey);
     xChmod(0o500, "$stompDir/keys");
@@ -255,6 +258,7 @@ sub readKey {
 sub writeEncryptedFile(Str $filename, Str $data) {
     my $fh = xOpen("$stompDir/data/$filename");
     xWrite($fh, $data);
+    xClose($fh);
     xChmod(0o600, "$stompDir/data/$filename");
 }
 
@@ -265,6 +269,7 @@ sub readEncryptedFile(Str $filename) {
 sub writeIndex(Str $encjson) {
     my $fh = xOpen("$stompDir/index");
     xWrite($fh, $encjson);
+    xClose($fh);
 }
 
 sub readIndex {
