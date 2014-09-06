@@ -15,6 +15,7 @@ method Command(Str $command, Str @options) {
         when <find> { self.Find(@options) }
         when <edit> { self.Edit(@options) }
         when <gen> { self.Generate(@options) }
+        when <x> | <clip> { self.Clip(@options) }
         default { self.Usage() }
     }
 }
@@ -114,6 +115,25 @@ method Get(Str @options) {
     for $datajson.kv -> $key, $value {
         say "$key: $value";
     }
+}
+
+method Clip(Str @options) {
+    self.Usage("must specify sitename") if @options.elems < 1;
+    my $sitename = @options.shift;
+    my $enckey = readKey();
+    my $deckey = AES256.Decrypt(getPassword(), $enckey);
+
+    my $json = from-json(AES256.Decrypt($deckey, readIndex()));
+
+    err("cannot find $sitename") if not $json{$sitename} :exists;
+
+    my $filename = $json{$sitename};
+
+    my $encdata = readEncryptedFile($filename);
+    my $decdata = AES256.Decrypt($deckey, $encdata);
+    my $datajson = from-json($decdata);
+
+    say $datajson<password>;
 }
 
 method Find(Str @options) {
