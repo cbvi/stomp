@@ -36,7 +36,10 @@ method Get(Str @options) {
     my $sitename = @options.shift;
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
-    my $filename = hashFilename($sitename, $deckey);
+
+    my $json = from-json(AES256.Decrypt($deckey, readIndex()));
+    my $filename = $json{$sitename};
+
     my $encdata = readEncryptedFile($filename);
     my $decdata = AES256.Decrypt($deckey, $encdata);
     say $decdata;
