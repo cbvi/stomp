@@ -14,6 +14,7 @@ method Command(Str $command, Str @options) {
         when <get> { self.Get(@options) }
         when <find> { self.Find(@options) }
         when <edit> { self.Edit(@options) }
+        when <gen> { self.Generate(@options) }
         default { self.Usage() }
     }
 }
@@ -131,6 +132,50 @@ method Find(Str @options) {
             say "$key\t ({$data<username>})";;
         }
     }
+}
+
+method Generate(Str @options) {
+    my $len = 16;
+    my $set = 'a';
+
+    my Str $o1;
+
+    if @options.elems > 0  {
+        if @options[0] ~~ / ^ <digit>* $ / {
+            $len = @options[0];
+            $o1 = "len";
+        }
+        elsif @options[0] ~~ / ^ <[as]> $ / {
+            $set = @options[0];
+            $o1 = "set";
+        }
+        else {
+            self.Usage("didn't understand first parameter: {@options[0]}");
+        }
+    }
+
+    if @options.elems > 1 {
+        if @options[1] ~~ / ^ <[as]> $ / {
+            self.Usage("can't specify set twice") if $o1 eq "set";
+            $set = @options[1];
+        }
+        elsif @options[1] ~~ / ^ <digit>* $ / {
+            self.Usage("can't specify length twice") if $o1 eq "len";
+            $len = @options[1];
+        }
+        else {
+            self.Usage("didn't understand second parameter: {@options[1]}");
+        }
+    }
+
+    my $range = $set eq 'a' ?? (48..57, 65..90, 97..122) !! (33..126);
+    my Str $gend = '';
+
+    while ($gend.chars < $len) {
+        $gend ~= chr($range.pick());
+    }
+
+    say $gend;
 }
 
 method Setup {
