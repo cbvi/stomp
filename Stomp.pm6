@@ -1,4 +1,5 @@
 use AES256;
+use JSON::Tiny;
 
 class Stomp;
 
@@ -20,9 +21,15 @@ method Add(Str @options) {
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
     my $data = "Sitename: $sitename";
-    my $filename = hashFilename($sitename, $deckey);
+    my $filename = AES256.sha256sum(AES256.RandomBytes(16));
     my $encdata = AES256.Encrypt($deckey, $data);
     writeEncryptedFile($filename, $encdata);
+
+    my $json = AES256.Decrypt($deckey, readIndex());
+    my $index = from-json($json);
+    $index{$sitename} = $filename;
+    my $encjson = AES256.Encrypt($deckey, to-json($index));
+    writeIndex($encjson);
 }
 
 method Get(Str @options) {
@@ -52,8 +59,11 @@ method Setup {
         msg("Let's begin");
 
         {
-            writeKey(AES256.Encrypt(
-                getPassword(:confirm), AES256.RandomBytes(1024 * 8)));
+            my $pw = getPassword(:confirm);
+            my $key = AES256.RandomBytes(1024 * 8);
+            writeKey(AES256.Encrypt($pw, $key));
+            my $encjson = AES256.Encrypt($key, to-json({ }));
+            writeIndex($encjson);
         }
 
         msg("All done. You can now use $prog. Have fun.");
@@ -89,6 +99,15 @@ sub writeEncryptedFile(Str $filename, Str $data) {
 
 sub readEncryptedFile(Str $filename) {
     return slurp("$stompDir/data/$filename");
+}
+
+sub writeIndex(Str $encjson) {
+    my $fh = open("$stompDir/index", :w);
+    $fh.print($encjson);
+}
+
+sub readIndex {
+    return slurp("$stompDir/index");
 }
 
 sub hashFilename(Str $filename, Str $key) {
