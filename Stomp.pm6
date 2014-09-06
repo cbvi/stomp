@@ -5,7 +5,7 @@ class Stomp;
 
 my $prog = "Stomp";
 
-my IO::Path $stompDir .= new(%*ENV<HOME> ~ "/.stomp");
+my Str $stompDir = %*ENV<HOME> ~ "/.stomp";
 my Str $stompKey = "$stompDir/keys/stompkey";
 
 method Command(Str $command, Str @options) {
@@ -59,19 +59,15 @@ method Get(Str @options) {
 }
 
 method Setup {
-    return if $stompDir.d;
+    return if $stompDir.IO.d;
 
-    if not $stompDir.e {
+    if not $stompDir.IO.e {
         header("Welcome to $prog");
         msg("getting things ready...");
-        mkdir($stompDir)
-            or panic("could not create $stompDir");
-        chmod(0o700, $stompDir)
-            or panic("could not set permissions on $stompDir");
-        mkdir("$stompDir/keys")
-            or panic("could not create $stompDir/keys");
-        mkdir("$stompDir/data")
-            or panic("could not create $stompDir/data");
+        xMkdir($stompDir);
+        xChmod(0o700, $stompDir);
+        xMkdir("$stompDir/keys");
+        xMkdir("$stompDir/data");
         msg("Let's begin");
 
         {
@@ -93,14 +89,11 @@ method Usage() {
 }
 
 sub writeKey(Str $encdata) {
-    my $fh = open($stompKey, :w)
-        or panic("cannot open $stompKey for writing");
-    $fh.print($encdata) or panic("could not write data to $stompKey");
+    my $fh = xOpen($stompKey);
+    xWrite($fh, $encdata);
     
-    chmod(0o0400, $stompKey)
-        or panic("could not set file permissions on $stompKey");
-    chmod(0o500, "$stompDir/keys")
-        or panic("could not permissions on $stompDir/keys");
+    xChmod(0o0400, $stompKey);
+    xChmod(0o500, "$stompDir/keys");
 }
 
 sub readKey {
@@ -108,22 +101,22 @@ sub readKey {
 }
 
 sub writeEncryptedFile(Str $filename, Str $data) {
-    my $fh = open("$stompDir/data/$filename", :w);
-    $fh.print($data);
-    chmod(0o400, "$stompDir/data/$filename");
+    my $fh = xOpen("$stompDir/data/$filename");
+    xWrite($fh, $data);
+    xChmod(0o400, "$stompDir/data/$filename");
 }
 
 sub readEncryptedFile(Str $filename) {
-    return slurp("$stompDir/data/$filename");
+    return xSlurp("$stompDir/data/$filename");
 }
 
 sub writeIndex(Str $encjson) {
-    my $fh = open("$stompDir/index", :w);
-    $fh.print($encjson);
+    my $fh = xOpen("$stompDir/index");
+    xWrite($fh, $encjson);
 }
 
 sub readIndex {
-    return slurp("$stompDir/index");
+    return xSlurp("$stompDir/index");
 }
 
 sub hashFilename(Str $filename, Str $key) {
@@ -139,6 +132,26 @@ sub getPassword(Bool :$confirm?) {
         return $p1 if $p1 eq prompt("Confirm: ");
         msg("Passwords did not match, try again");
     }
+}
+
+sub xMkdir(Str $dir) {
+    mkdir($dir) or panic("could not create directory $dir");
+}
+
+sub xChmod(Int $mode, Str $file) {
+    chmod($mode, $file) or panic("could not set file permissions on $file");
+}
+
+sub xOpen(Str $file) {
+    return open($file, :w) or panic("could not open $file");
+}
+
+sub xWrite(IO::Handle $fh, Str $text) {
+    $fh.print($text) or panic("could not write to {$fh.path}");
+}
+
+sub xSlurp(Str $file) {
+    return slurp($file) or panic("could not slurp $file");
 }
 
 sub header(Str $hdr) {
