@@ -48,11 +48,15 @@ method Add(Str @options) {
 }
 
 method Get(Str @options) {
+    self.Usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
 
     my $json = from-json(AES256.Decrypt($deckey, readIndex()));
+
+    err("cannot find $sitename") if not $json{$sitename} :exists;
+
     my $filename = $json{$sitename};
 
     my $encdata = readEncryptedFile($filename);
@@ -106,7 +110,7 @@ method Setup {
 }
 
 method Usage(Str $proclaim?) {
-    say $proclaim if $proclaim;
+    msg($proclaim) if $proclaim;
     say "XXX TODO";
     exit(0);
 }
@@ -185,8 +189,19 @@ sub msg(Str $m) {
     say "==> $m";
 }
 
+sub err(Str $e) {
+    msg($e);
+    exit(1);
+}
+
 sub panic(Str $err) {
-    say "#" xx 72;
+    print ' ' xx 4;
+    print "#" xx 72;
+    print ' ' xx 4;
+    say '';
+    print ' ' xx 4;
     say "# $err";
+    print ' ' xx 4;
+    say "# this is a fatal error. Abandoning ship.";
     exit(1);
 }
