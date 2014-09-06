@@ -10,6 +10,7 @@ my Str $stompKey = "$stompDir/keys/stompkey";
 method Command(Str $command, Str @options) {
     given $command {
         when <add> { self.Add(@options) }
+        when <get> { self.Get(@options) }
         default { self.Usage() }
     }
 }
@@ -28,6 +29,10 @@ method Get(Str @options) {
     my $sitename = @options.shift;
     my $enckey = readKey();
     my $deckey = AES256.Decrypt(getPassword(), $enckey);
+    my $filename = hashFilename($sitename, $deckey);
+    my $encdata = readEncryptedFile($filename);
+    my $decdata = AES256.Decrypt($deckey, $encdata);
+    say $decdata;
 }
 
 method Setup {
@@ -52,6 +57,7 @@ method Setup {
         }
 
         msg("All done. You can now use $prog. Have fun.");
+        exit(0);
     }
 }
 
