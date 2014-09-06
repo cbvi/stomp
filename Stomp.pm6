@@ -63,7 +63,9 @@ method Get(Str @options) {
     my $decdata = AES256.Decrypt($deckey, $encdata);
     my $datajson = from-json($decdata);
     header($datajson<sitename>);
-    say $datajson<password>;
+    for $datajson.kv -> $key, $value {
+        say "$key: $value";
+    }
 }
 
 method find(Str @options) {
