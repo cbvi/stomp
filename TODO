@@ -1,0 +1,6 @@
+* refactor the duplicated code
+* make the functions modular
+* the various Stomp methods should not be doing the thing, they should be an
+  interface to the function that does the thing
+* implement a timed unlock mechanism, probably by using a daemon that can be
+  asked for the decrypted key
