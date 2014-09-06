@@ -168,11 +168,17 @@ method Generate(Str @options) {
         }
     }
 
-    my $range = $set eq 'a' ?? (48..57, 65..90, 97..122) !! (33..126);
+    my $achars = / [ <[a..z]> | <[A..Z]> | <[0..9]> ] /;
+    my $sym = $set eq 'a' ?? $achars !! / [<$achars>|'~'|'`'|'!'|'@'|'#'|'$'|'%'|'^'|'&'|'*'|'('|')'|'-'|'_'|'+'|'='|'<'|'>'|','|'.'|'?'|'/'|':'|';'] /;
+
     my Str $gend = '';
 
+    my $ur = open('/dev/urandom');
+
     while ($gend.chars < $len) {
-        $gend ~= chr($range.pick());
+        my $bin = $ur.read(1);
+        my $s = $bin.list.fmt("%c", '');
+        $gend ~= $s.comb( / <$sym> /).join();
     }
 
     say $gend;
