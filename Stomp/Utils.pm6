@@ -8,6 +8,9 @@ our sub Encrypt(Str $key, Str $data) returns Str {
 
 our sub Decrypt(Str $key, Str $data) returns Str {
     return AES256.Decrypt($key, $data);
+    CATCH {
+        err("Decryption failed, check your password");
+    }
 }
 
 our sub Random(Int $length) {

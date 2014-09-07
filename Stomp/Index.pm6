@@ -11,6 +11,10 @@ our sub UpdateIndex(Stomp::Key $key, Str $sitename, Str $filename) {
     writeIndex($key.Encrypt(to-json($index)));
 }
 
+our sub GetIndex(Stomp::Key $key) {
+    return $key.Decrypt(readIndex());
+}
+
 sub readIndex {
     return xSlurp($Stomp::Config::Index);
 }

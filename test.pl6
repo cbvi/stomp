@@ -5,6 +5,12 @@ use Stomp::Data;
 
 my $key = Stomp::Key.new;
 
-Stomp::Data::AddData($key, "test", "blah");
+my %h =
+    sitename => 'test',
+    username => 'quux',
+    password => 'letmein'
+;
+
+Stomp::Data::EditData($key, 'test', %h);
 
 $key.Finish($key);

@@ -17,9 +17,12 @@ our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?) {
     my Str $filename = Stomp::Utils::Sha256(Stomp::Utils::Random(32));
     writeDataFile($filename, $key.Encrypt($json));
     Stomp::Index::UpdateIndex($key, $sitename, $filename);
+}
 
-    header($sitename);
-    say $password;
+our sub EditData(Stomp::Key $key, Str $sitename, %data) {
+    my $index = from-json(Stomp::Index::GetIndex($key));
+    my $filename = $index{$sitename} // err("cannot find $sitename");
+    writeDataFile($filename, $key.Encrypt(to-json(%data)));
 }
 
 sub writeDataFile(Str $filename, Str $data) {
