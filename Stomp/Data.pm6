@@ -24,10 +24,21 @@ our sub EditData(Stomp::Key $key, Str $sitename, %data) {
     writeDataFile($filename, $key.Encrypt(to-json(%data)));
 }
 
-our sub GetData(Stomp::Key $key, Str $sitename) returns Hash {
-    my $filename = getFilenameFromIndex($key, $sitename);
+our sub GetData(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
+    my $filename = $fn // getFilenameFromIndex($key, $sitename);
     my $data = from-json($key.Decrypt(readDataFile($filename)));
     return $data;
+}
+
+our sub FindData(Stomp::Key $key, Str $searchterm) returns Array {
+    my $index = from-json(Stomp::Index::GetIndex($key));
+    my @found;
+    for $index.kv -> $sitename, $filename {
+        if $sitename ~~ / $searchterm / {
+            @found.push(GetData($key, $sitename, $filename));
+        }
+    }
+    return @found;
 }
 
 sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {

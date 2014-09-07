@@ -5,6 +5,9 @@ use Stomp::Data;
 
 my $key = Stomp::Key.new;
 
-say Stomp::Data::GetData($key, 'test');
+my @sites = Stomp::Data::FindData($key, 'wiki');
+for @sites {
+    say .perl;
+}
 
 $key.Finish($key);
