@@ -20,16 +20,19 @@ our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?) {
 }
 
 our sub EditData(Stomp::Key $key, Str $sitename, %data) {
-    my $index = from-json(Stomp::Index::GetIndex($key));
-    my $filename = $index{$sitename} // err("cannot find $sitename");
+    my $filename = getFilenameFromIndex($key, $sitename);
     writeDataFile($filename, $key.Encrypt(to-json(%data)));
 }
 
 our sub GetData(Stomp::Key $key, Str $sitename) returns Hash {
-    my $index = from-json(Stomp::Index::GetIndex($key));
-    my $filename = $index{$sitename} // err("cannot find $sitename");
+    my $filename = getFilenameFromIndex($key, $sitename);
     my $data = from-json($key.Decrypt(readDataFile($filename)));
     return $data;
+}
+
+sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {
+    my $index = from-json(Stomp::Index::GetIndex($key));
+    return $index{$sitename} // err("cannot find $sitename");
 }
 
 sub writeDataFile(Str $filename, Str $data) {
