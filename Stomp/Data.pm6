@@ -41,6 +41,15 @@ our sub FindData(Stomp::Key $key, Str $searchterm) returns Array {
     return @found;
 }
 
+our sub ListData(Stomp::Key $key) returns Array {
+    my $index = from-json(Stomp::Index::GetIndex($key));
+    my @sites;
+    for $index.kv -> $sitename, $filename {
+        @sites.push(GetData($key, $sitename, $filename));
+    }
+    return @sites;
+}
+
 sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {
     my $index = from-json(Stomp::Index::GetIndex($key));
     return $index{$sitename} // err("cannot find $sitename");

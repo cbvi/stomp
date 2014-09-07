@@ -5,7 +5,7 @@ use Stomp::Data;
 
 my $key = Stomp::Key.new;
 
-my @sites = Stomp::Data::FindData($key, 'wiki');
+my @sites = Stomp::Data::ListData($key);
 for @sites {
     say .perl;
 }
