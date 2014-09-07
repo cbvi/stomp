@@ -5,9 +5,6 @@ use Stomp::Data;
 
 my $key = Stomp::Key.new;
 
-my @sites = Stomp::Data::ListData($key);
-for @sites {
-    say .perl;
-}
+say Stomp::Data::PasswordData($key, 'wikipedia');
 
 $key.Finish($key);

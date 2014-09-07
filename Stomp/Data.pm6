@@ -50,6 +50,10 @@ our sub ListData(Stomp::Key $key) returns Array {
     return @sites;
 }
 
+our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {
+    return GetData($key, $sitename)<password>;
+}
+
 sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {
     my $index = from-json(Stomp::Index::GetIndex($key));
     return $index{$sitename} // err("cannot find $sitename");
