@@ -2,23 +2,23 @@ use AES256;
 
 module Stomp::Utils;
 
-our sub encrypt(Str $key, Str $data) returns Str {
+our sub Encrypt(Str $key, Str $data) returns Str {
     return AES256.Encrypt($key, $data);
 }
 
-our sub decrypt(Str $key, Str $data) returns Str {
+our sub Decrypt(Str $key, Str $data) returns Str {
     return AES256.Decrypt($key, $data);
 }
 
-our sub random(Int $length) {
+our sub Random(Int $length) {
     return AES256.RandomBytes($length);
 }
 
-our sub sha256(Str $data) {
+our sub Sha256(Str $data) {
     return AES256.sha256sum($data);
 }
 
-our sub generatePassword(Int $len, Bool :$special?) returns Str {
+our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
     my $achars = / [ <[a..z]> | <[A..Z]> | <[0..9]> ] /;
     my $sym = !$special ?? $achars !! / [<$achars>|'~'|'`'|'!'|'@'|'#'|'$'|'%'|'^'|'&'|'*'|'('|')'|'-'|'_'|'+'|'='|'<'|'>'|','|'.'|'?'|'/'|':'|';'] /;
 
@@ -35,7 +35,7 @@ our sub generatePassword(Int $len, Bool :$special?) returns Str {
     return $gen;
 }
 
-sub askPassword(Bool :$confirm?) is export {
+sub AskPassword(Bool :$confirm?) is export {
     my Str $p1 = "";
     my Str $p2 = "";
     loop {
@@ -75,7 +75,7 @@ sub xSlurp(Str $file) is export {
     CATCH { panic("could not slurp $file"); }
 }
 
-our sub askYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
+our sub AskYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
     panic("must specify a default") if not $yes and not $no;
     panic("both yes and no cannot be the default") if $yes and $no;
     my $default = $yes ?? "Y" !! "N";
@@ -86,26 +86,26 @@ our sub askYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
     $input .= substr(0, 1);
     if $input ne any('Y', 'N') {
         msg("answer (Y)es or (N)o");
-        return askYesOrNo($question, :$yes, :$no);
+        return AskYesOrNo($question, :$yes, :$no);
     }
     return False if $input eq 'N';
     return True if $input eq 'Y';
 }
 
-our sub header(Str $hdr) {
+sub header(Str $hdr) is export {
     say "=== $hdr ===";
 }
 
-our sub msg(Str $m) {
+sub msg(Str $m) is export {
     say "==> $m";
 }
 
-our sub err(Str $e) {
+sub err(Str $e) is export {
     msg($e);
     exit(1);
 }
 
-our sub panic(Str $err) {
+sub panic(Str $err) is export {
     my $retort = "# this is a fatal error, abandoning ship.";
     my Int $len = ($retort.chars, "# $err".chars).max;
     $len = 76 if $len > 76;
