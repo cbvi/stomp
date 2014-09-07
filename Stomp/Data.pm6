@@ -25,6 +25,13 @@ our sub EditData(Stomp::Key $key, Str $sitename, %data) {
     writeDataFile($filename, $key.Encrypt(to-json(%data)));
 }
 
+our sub GetData(Stomp::Key $key, Str $sitename) returns Hash {
+    my $index = from-json(Stomp::Index::GetIndex($key));
+    my $filename = $index{$sitename} // err("cannot find $sitename");
+    my $data = from-json($key.Decrypt(readDataFile($filename)));
+    return $data;
+}
+
 sub writeDataFile(Str $filename, Str $data) {
     my $fh = xOpen($Stomp::Config::DataDir ~ "/$filename");
     xWrite($fh, $data);
