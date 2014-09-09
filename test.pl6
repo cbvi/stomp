@@ -3,8 +3,8 @@ use lib '.';
 use Stomp::Key;
 use Stomp::Data;
 
-my $key = Stomp::Key.new;
+use Stomp::Daemon;
 
-say Stomp::Data::PasswordData($key, 'wikipedia');
+my $x = Stomp::Daemon.new();
 
-$key.Finish($key);
+$x.MainLoop();
