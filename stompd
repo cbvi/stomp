@@ -1,21 +1,20 @@
 #!/usr/bin/env perl6
-my $socket = IO::Socket::INET.new(
-    localhost => '127.0.0.1',
-    localport => 70291,
-    :listen
-);
+use v6;
 
-while (my $client = $socket.accept()) {
+my $sync = Promise.new;
 
-    my $req = '';
+my $socket = IO::Socket::Async.listen('127.0.0.1', 70291);
 
-    while (my $r = $client.recv(1)) {
-        if $r ne "\n" {
-            $req ~= $r;
-        }
-        else {
-            last;
-        }
-    }
-    $client.send("you said: $req\n");
-}
+my $req = '';
+
+$socket.tap( -> $connection {
+    my $tap = $connection.chars_supply.tap({
+        $req ~= $_;
+        say $req;
+        $connection.send("you said: $req\n");
+        $connection.close();
+        $sync.vow.keep(1);
+    });
+});
+
+await $sync;

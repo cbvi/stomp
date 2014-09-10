@@ -1,27 +1,17 @@
 use v6;
 
-my $socket = IO::Socket::INET.new(
-    host => '127.0.0.1',
-    port => 70291
-);
+my $sync = Promise.new;
 
-loop {
-    $socket.send("ADDX\n");
+my $client = IO::Socket::Async.connect('127.0.0.1', 70291).then( -> $sr {
+    my $socket = $sr.result;
+    $socket.send("This is a test");
+    my $tap = $socket.chars_supply.tap( -> $chars {
+        say $chars;
+        $sync.keep(1);
+    });
+});
 
-    my $res = '';
-
-    while (my $r = $socket.recv(1)) {
-        if $r ne "\n" {
-            $res ~= $r;
-        }
-        else {
-            last;
-        }
-    }
-    if $res eq "GOAHEAD" {
-        $socket.send("some stuff\n");
-    }
-    say $res;
-}
+await $client;
+await $sync;
 
 # vim: ft=perl6
