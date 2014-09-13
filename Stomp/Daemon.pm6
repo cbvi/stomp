@@ -1,64 +1,37 @@
 class Stomp::Daemon;
 
 use Stomp::Config;
+use Stomp::Dispatch;
+use Stomp::Key;
 
-enum Command <ADD GET FIND LIST EDIT GEN>;
+my Str $localhost = $Stomp::Config::Host;
+my Int $localport = $Stomp::Config::Port;
 
-has IO::Socket::INET $!Socket;
-has IO::Socket::INET $!Client;
+has $!Socket;
+has Promise $!Promise;
+has Tap $!Tap;
 
-has Bool $!ExpectingData = False;
-has Command $!CurrentCommand;
+has Stomp::Key $.Key;
 
-my $localhost = $Stomp::Config::Host;
-my $localport = $Stomp::Config::Port;
+method StopCollaborateAndListen() {
+    $!Key = Stomp::Key.new();
 
-method MainLoop() {
-    $!Socket = IO::Socket::INET.new(:$localhost, :$localport, :listen);
-    my $client = $!Socket.accept();
-    $!Client = $client;
-    
-    loop {
-        my $request = self!GetRequest($client);
-        self!DoSomething($request);
-    }
+    $!Promise = Promise.new();
+    $!Socket = IO::Socket::Async.listen($localhost, $localport);
+    $!Tap = $!Socket.tap( -> $connection {
+        $connection.chars_supply.tap( -> $message {
+            my $response = Stomp::Dispatch.Command($message, self);
+            await $connection.send($response);
+            $connection.close();
+        });
+        Thread.yield();
+    });
+    Thread.yield();
+    await $!Promise;
 }
 
-method !GetRequest(IO::Socket $client) {
-    my $req = '';
-
-    while (my $sent = $client.recv(1)) {
-        if $sent ne "\n" {
-            $req ~= $sent;
-        }
-        else {
-            return $req;
-        }
-    }
-}
-
-method !DoSomething(Str $command) {
-    given $command {
-        when <ADD> {
-            $!CurrentCommand = ADD;
-            self!StartExpectingData();
-        }
-        default {
-            if $!ExpectingData {
-                say $command;
-            }
-            else {
-                self!InvalidRequest("not recognised");
-            }
-        }
-    }
-}
-
-method !StartExpectingData() {
-    $!ExpectingData = True;
-    $!Client.send("GOAHEAD\n");
-}
-
-method !InvalidRequest(Str $err) {
-    $!Client.send("WHAT: $err\n");
+method Shutdown() {
+    $!Key.Finish($!Key);
+    $!Tap.close();
+    $!Promise.keep(1);
 }

@@ -1,20 +1,8 @@
 #!/usr/bin/env perl6
 use v6;
+use lib '.';
 
-my $sync = Promise.new;
+use Stomp::Daemon;
 
-my $socket = IO::Socket::Async.listen('127.0.0.1', 70291);
-
-my $req = '';
-
-$socket.tap( -> $connection {
-    my $tap = $connection.chars_supply.tap({
-        $req ~= $_;
-        say $req;
-        $connection.send("you said: $req\n");
-        $connection.close();
-        $sync.vow.keep(1);
-    });
-});
-
-await $sync;
+my $d = Stomp::Daemon.new();
+$d.StopCollaborateAndListen();

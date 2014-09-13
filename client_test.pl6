@@ -1,17 +1,21 @@
 use v6;
+use JSON::Tiny;
 
-my $sync = Promise.new;
+my %h = searchterm => 'Lighthouse';
 
-my $client = IO::Socket::Async.connect('127.0.0.1', 70291).then( -> $sr {
-    my $socket = $sr.result;
-    $socket.send("This is a test");
-    my $tap = $socket.chars_supply.tap( -> $chars {
-        say $chars;
-        $sync.keep(1);
-    });
-});
+my $json = to-json(%h);
+say $json;
 
-await $client;
-await $sync;
+my $sock = IO::Socket::INET.new(host => '127.0.0.1', port => 70291);
+
+$sock.send("LIST $json\n");
+
+my $rec = '';
+while (my $r = $sock.recv(1)) {
+    next if $r eq "\n";
+    $rec ~= $r;
+}
+
+say $rec;
 
 # vim: ft=perl6
