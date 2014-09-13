@@ -5,11 +5,7 @@ use Stomp::Utils;
 
 my Str $decodedKey;
 
-method new() {
-    my Str $enckey = readKey();
-    $decodedKey = Stomp::Utils::Decrypt("lep", $enckey);
-    return self.bless();
-}
+has Bool $.Locked is rw = True;
 
 method Encrypt(Str $data) returns Str {
     return Stomp::Utils::Encrypt(key(), $data);
@@ -18,6 +14,18 @@ method Encrypt(Str $data) returns Str {
 method Decrypt(Str $data) returns Str {
     return Stomp::Utils::Decrypt(key(), $data);
 }
+
+method Lock() {
+    $decodedKey = Stomp::Utils::Random($decodedKey.chars);
+    undefine $decodedKey;
+    $.Locked = True;
+}
+
+method Unlock(Str $key) {
+    my Str $enckey = readKey();
+    $decodedKey = Stomp::Utils::Decrypt($key, $enckey);
+    $.Locked = False;
+} 
 
 method Finish(Stomp::Key $obj is rw) {
     if $obj !~~ self {

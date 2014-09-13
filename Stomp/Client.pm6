@@ -7,16 +7,7 @@ use JSON::Tiny;
 my Str $parting-words;
 
 method Command(Str $command, Str @options) {
-    my Str $request = self.Dispatch($command, @options);
-    my $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
-        port => $Stomp::Config::Port);
-    $sock.send("{$command.uc} $request\n");
-
-    my $response = '';
-    while (my $r = $sock.recv(1)) {
-        next if $r eq "\n";
-        $response ~= $r;
-    }
+    my $response = self.Dispatch($command, @options);
     return $response;
 }
 
@@ -69,7 +60,8 @@ method Find(Str @options) {
 }
 
 method List(Str @options) {
-    return '{  }';
+    my $req = '{  }';
+    return Stomp::Utils::DoRequest("LIST $req");
 }
 
 method Server(Str @options) {

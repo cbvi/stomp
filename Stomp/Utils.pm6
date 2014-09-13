@@ -1,4 +1,6 @@
 use AES256;
+use Stomp::Config;
+use JSON::Tiny;
 
 module Stomp::Utils;
 
@@ -38,6 +40,21 @@ our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
     return $gen;
 }
 
+our sub DoRequest(Str $data) {
+    my $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
+        port => $Stomp::Config::Port);
+    $sock.send($data ~ "\n");
+
+    my $response = '';
+    while (my $r = $sock.recv(1)) {
+        next if $r eq "\n";
+        $response ~= $r;
+    }
+
+    my $obj = MetaHandler(from-json($response), $data);
+    return $obj;
+}
+
 sub AskPassword(Bool :$confirm?) is export {
     my Str $p1 = "";
     my Str $p2 = "";
@@ -48,6 +65,17 @@ sub AskPassword(Bool :$confirm?) is export {
         msg("Passwords did not match, try again");
     }
 }
+
+sub MetaHandler(%obj, Str $redo) {
+    return %obj if not %obj<meta> :exists;
+
+    if %obj<meta> eq <locked> {
+        my %h = password => AskPassword();
+        DoRequest("UNLOCK {to-json(%h)}");
+        return DoRequest($redo);
+    }
+}
+    
 
 sub xMkdir(Str $dir) is export {
     mkdir($dir);

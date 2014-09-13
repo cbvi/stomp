@@ -10,6 +10,11 @@ method Command(Str $message, $daemon) returns Str {
 }
 
 method !DoSomething(Str $command, %data, $d) {
+    if $command ne "UNLOCK" {
+        my $ls = self!LockStatus($d.Key);
+        return $ls if $ls;
+    }
+
     given $command {
         when <ADD> {
             self!Add(%data, $d.Key);
@@ -29,6 +34,9 @@ method !DoSomething(Str $command, %data, $d) {
         when <GEN> {
             self!Gen(%data, $d.Key);
         }
+        when <UNLOCK> {
+            self!Unlock(%data, $d.Key);
+        }
         when <SERVER> {
             self!Server(%data, $d);
         }
@@ -36,6 +44,15 @@ method !DoSomething(Str $command, %data, $d) {
             return "invalid command: '$command'";
         }
     }
+}
+
+method !LockStatus(Stomp::Key $key) {
+    my %data;
+    if $key.Locked {
+        %data = meta => 'locked';
+        return to-json(%data);
+    }
+    return %data;
 }
 
 method !Add(%data, Stomp::Key $key) {
@@ -65,6 +82,11 @@ method !Edit(%data, Stomp::Key $key) {
 
 method !Gen(%data, Stomp::Key $key) {
     return "FIX ME";
+}
+
+method !Unlock(%data, Stomp::Key $key) {
+    $key.Unlock(%data<password>);
+    return to-json(self!LockStatus($key));
 }
 
 method !Server(%data, $daemon) {
