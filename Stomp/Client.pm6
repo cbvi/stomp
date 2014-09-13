@@ -12,6 +12,7 @@ method Command(Str $command, Str @options) {
         when <list> { self.List(@options) }
         when <gen>  { self.Generate(@options) }
         when <x> | <clip> { self.Clip(@options) }
+        when <server> { self.Server(@options) }
         default { self.Usage() }
     }
 }
@@ -52,4 +53,24 @@ method Find(Str @options) {
 
 method List(Str @options) {
     return '{  }';
+}
+
+method Server(Str @options) {
+    self.Usage("must specify command") if @options.elems < 1;
+    my $command = @options.shift;
+    my %data = :$command;
+    say "server being issued $command command";
+    return to-json(%data);
+}
+
+method Usage(Str $hint?) {
+    msg($hint) if $hint;
+    say "\t$*PROGRAM add sitename username [password]";
+    say "\t$*PROGRAM get sitename";
+    say "\t$*PROGRAM find sitename";
+    say "\t$*PROGRAM list";
+    say "\t$*PROGRAM edit sitename";
+    say "\t$*PROGRAM gen [a = alphanumerical|s = include symbols] [length]";
+    say "\t$*PROGRAM [x|clip] sitename";
+    exit(0);
 }

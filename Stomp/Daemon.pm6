@@ -14,6 +14,7 @@ has Tap $!Tap;
 has Stomp::Key $.Key;
 
 method StopCollaborateAndListen() {
+    note "$*PROGRAM: starting...";
     $!Key = Stomp::Key.new();
 
     $!Promise = Promise.new();
@@ -27,11 +28,15 @@ method StopCollaborateAndListen() {
         Thread.yield();
     });
     Thread.yield();
+    note "$*PROGRAM: started";
     await $!Promise;
 }
 
 method Shutdown() {
+    note "$*PROGRAM: stopping...";
     $!Key.Finish($!Key);
     $!Tap.close();
     $!Promise.keep(1);
+    note "$*PROGRAM: stopped";
+    exit(0);
 }

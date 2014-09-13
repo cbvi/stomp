@@ -2,13 +2,15 @@ use v6;
 use lib '.';
 use Stomp::Client;
 
-my Str @a = <testing123>;
+Stomp::Client.Usage() if not @*ARGS[0];
 
-my $json = Stomp::Client.Command('list', @a);
+my Str $command = @*ARGS.shift;
+my Str @options = @*ARGS;
+
+my $json = Stomp::Client.Command($command, @options);
 
 my $sock = IO::Socket::INET.new(host => '127.0.0.1', port => 70291);
-
-$sock.send("LIST $json\n");
+$sock.send("{$command.uc} $json\n");
 
 my $rec = '';
 while (my $r = $sock.recv(1)) {

@@ -70,9 +70,11 @@ method !Gen(%data, Stomp::Key $key) {
 method !Server(%data, $daemon) {
     my Str $r = 'SERVER: invalid command';
 
-    if %data<command> :exists && %data<command> eq "SHUTDOWN" {
+    if %data<command> :exists && %data<command> eq "shutdown" {
+        note "$*PROGRAM: received shutdown command";
         $daemon.Shutdown();
         $r = "server shutdown complete";
     }
+    note $r;
     return $r;
 }
