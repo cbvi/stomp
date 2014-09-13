@@ -52,7 +52,7 @@ our sub DoRequest(Str $data) {
         $response ~= $r;
     }
 
-    return $response;
+    return from-json($response);
 }
 
 our sub PrepareRequest(Str $command, *%params) {

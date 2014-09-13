@@ -37,6 +37,9 @@ method !Lock(%request, Stomp::Key $key) {
 }
 
 method !Key(%request, Stomp::Key $key) {
+    if $key.Locked {
+        return { error => 'locked' };
+    }
     return { command => %request<command>, key => $$key.GetKey() };
 }
 

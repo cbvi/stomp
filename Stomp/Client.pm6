@@ -30,7 +30,12 @@ method Unlock() {
 
 method Key() {
     my $req = Stomp::Utils::PrepareRequest("key");
-    return Stomp::Utils::DoRequest($req);
+    my $result = Stomp::Utils::DoRequest($req);
+    if $result<error> :exists && $result<error> eq <locked> {
+        self.Unlock();
+        return self.Key();
+    }
+    return $result;
 }
 
 method Shutdown() {
