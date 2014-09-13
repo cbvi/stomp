@@ -51,8 +51,15 @@ our sub DoRequest(Str $data) {
         $response ~= $r;
     }
 
-    my $obj = MetaHandler(from-json($response), $data);
-    return $obj;
+    return $response;
+}
+
+our sub PrepareRequest(Str $command, *%params) {
+    my %r = :$command;
+    for %params.kv -> $name, $value {
+        %r{$name} = $value;
+    }
+    return to-json(%r);
 }
 
 sub AskPassword(Bool :$confirm?) is export {
@@ -65,17 +72,6 @@ sub AskPassword(Bool :$confirm?) is export {
         msg("Passwords did not match, try again");
     }
 }
-
-sub MetaHandler(%obj, Str $redo) {
-    return %obj if not %obj<meta> :exists;
-
-    if %obj<meta> eq <locked> {
-        my %h = password => AskPassword();
-        DoRequest("UNLOCK {to-json(%h)}");
-        return DoRequest($redo);
-    }
-}
-    
 
 sub xMkdir(Str $dir) is export {
     mkdir($dir);

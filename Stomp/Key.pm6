@@ -16,7 +16,7 @@ method Decrypt(Str $data) returns Str {
 }
 
 method Lock() {
-    $decodedKey = Stomp::Utils::Random($decodedKey.chars);
+    $decodedKey = Stomp::Utils::Random(8192);
     undefine $decodedKey;
     $.Locked = True;
 }
@@ -27,11 +27,15 @@ method Unlock(Str $key) {
     $.Locked = False;
 } 
 
+method GetKey() {
+    return key();
+}
+
 method Finish(Stomp::Key $obj is rw) {
     if $obj !~~ self {
         panic("object given to Finish() must be itself");
     }
-    $decodedKey = Stomp::Utils::Random($decodedKey.chars);
+    $decodedKey = Stomp::Utils::Random(8192);
     undefine $decodedKey;
     undefine $obj;
 }

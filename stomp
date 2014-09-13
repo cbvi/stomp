@@ -8,6 +8,6 @@ Stomp::Client.Usage() if not @*ARGS[0];
 my Str $command = @*ARGS.shift;
 my Str @options = @*ARGS;
 
-say Stomp::Client.Command($command, @options);
+say Stomp::Client.Command($command);
 
 # vim: ft=perl6
