@@ -46,8 +46,9 @@ our sub DoRequest(Str $data) {
     $sock.send($data ~ "\n");
 
     my $response = '';
-    while (my $r = $sock.recv(1)) {
-        next if $r eq "\n";
+    loop {
+        my $r = $sock.recv(1);
+        last if $r eq "";
         $response ~= $r;
     }
 
