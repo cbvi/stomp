@@ -1,10 +1,10 @@
 use v6;
-use JSON::Tiny;
+use lib '.';
+use Stomp::Client;
 
-my %h = searchterm => 'Lighthouse';
+my Str @a = <testing123>;
 
-my $json = to-json(%h);
-say $json;
+my $json = Stomp::Client.Command('list', @a);
 
 my $sock = IO::Socket::INET.new(host => '127.0.0.1', port => 70291);
 
