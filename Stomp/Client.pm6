@@ -74,7 +74,8 @@ method Server(Str @options) {
     self.Usage("must specify command") if @options.elems < 1;
     my $command = @options.shift;
     my %data = :$command;
-    say "server being issued $command command";
+    say "server issued $command command";
+    END { say "done"; }
     return to-json(%data);
 }
 
