@@ -4,6 +4,8 @@ use Stomp::Utils;
 use Stomp::Config;
 use JSON::Tiny;
 
+my Str $parting-words;
+
 method Command(Str $command, Str @options) {
     my Str $request = self.Dispatch($command, @options);
     my $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
@@ -75,7 +77,7 @@ method Server(Str @options) {
     my $command = @options.shift;
     my %data = :$command;
     say "server issued $command command";
-    END { say "done"; }
+    $parting-words = "done";
     return to-json(%data);
 }
 
@@ -89,4 +91,10 @@ method Usage(Str $hint?) {
     say "\t$*PROGRAM gen [a = alphanumerical|s = include symbols] [length]";
     say "\t$*PROGRAM [x|clip] sitename";
     exit(0);
+}
+
+END {
+    if $parting-words {
+        say $parting-words;
+    }
 }
