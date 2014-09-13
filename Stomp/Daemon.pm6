@@ -38,5 +38,6 @@ method Shutdown() {
     $!Tap.close();
     $!Promise.keep(1);
     note "$*PROGRAM: stopped";
+    sleep(2);
     exit(0);
 }

@@ -1,9 +1,24 @@
 class Stomp::Client;
 
 use Stomp::Utils;
+use Stomp::Config;
 use JSON::Tiny;
 
 method Command(Str $command, Str @options) {
+    my Str $request = self.Dispatch($command, @options);
+    my $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
+        port => $Stomp::Config::Port);
+    $sock.send("{$command.uc} $request\n");
+
+    my $response = '';
+    while (my $r = $sock.recv(1)) {
+        next if $r eq "\n";
+        $response ~= $r;
+    }
+    return $response;
+}
+
+method Dispatch(Str $command, Str @options) {
     given $command {
         when <add> { self.Add(@options) }
         when <get> { self.Get(@options) }
