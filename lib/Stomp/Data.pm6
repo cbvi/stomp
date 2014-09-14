@@ -53,7 +53,7 @@ our sub ListData(Stomp::Key $key) returns Array {
     return @sites;
 }
 
-our sub SetupData() {
+our sub SetupData(Str :$auto) {
     header("Welcome to $*PROGRAM");
     msg('getting things ready...');
     xMkdir($Stomp::Config::RootDir);
@@ -62,7 +62,7 @@ our sub SetupData() {
     xMkdir($Stomp::Config::DataDir);
     msg("let's begin");
 
-    my $pw = AskPassword(:confirm);
+    my $pw = $auto // AskPassword(:confirm);
     my $key = Stomp::Utils::Random(1024 * 8);
 
     my $fh = xOpen($Stomp::Config::Key);
@@ -79,7 +79,7 @@ our sub SetupData() {
     xClose($fh);
 
     msg("all done, have fun!");
-    exit(0);
+    exit(0) if not $auto;
 }
 
 our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {
