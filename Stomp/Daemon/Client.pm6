@@ -3,8 +3,7 @@ class Stomp::Daemon::Client;
 use Stomp::Utils;
 
 method Command(Str $command) {
-    my $response = self.Dispatch($command);
-    return $response;
+    return self.Dispatch($command);
 }
 
 method Dispatch(Str $command) {
@@ -19,13 +18,21 @@ method Dispatch(Str $command) {
 
 method Lock() {
     my $req = Stomp::Utils::PrepareRequest("lock");
-    return Stomp::Utils::DoRequest($req);
+    my $res = Stomp::Utils::DoRequest($req);
+
+    if $res<locked> {
+        msg("Locked!");
+    }
 }
 
 method Unlock() {
     my $req = Stomp::Utils::PrepareRequest("unlock",
         password => AskPassword());
-    return Stomp::Utils::DoRequest($req);
+    my $res = Stomp::Utils::DoRequest($req);
+
+    if not $res<locked> {
+        msg("Unlocked!");
+    }
 }
 
 method Key() {
@@ -33,15 +40,14 @@ method Key() {
     my $result = Stomp::Utils::DoRequest($req);
     if $result<error> :exists && $result<error> eq <locked> {
         self.Unlock();
-        return self.Key();
+        self.Key();
     }
     return $result;
 }
 
 method Shutdown() {
     my $req = Stomp::Utils::PrepareRequest("shutdown");
-    note "server sent shutdown command";
+    msg("server sent shutdown command");
     my $result = Stomp::Utils::DoRequest($req, :noreply);
-    note "done";
-    return $result;
+    msg("done");
 }

@@ -149,9 +149,9 @@ method Generate(Str @options) {
 }
 
 method Admin(Str @options) {
+    self.Usage("must specify command to send to server") if @options.elems < 1;
     my $command = @options.shift;
-    my $result = Stomp::Daemon::Client.Command($command);
-    say $result.perl;
+    Stomp::Daemon::Client.Command($command);
 }
 
 method Usage(Str $hint?) {
