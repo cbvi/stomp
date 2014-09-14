@@ -23,7 +23,9 @@ method Add(Str @options) {
     my $password = @options.shift // Str;
 
     my $key = Stomp::Key.Smith();
-    Stomp::Data::AddData($key, $sitename, $username, $password);
+    my $data = Stomp::Data::AddData($key, $sitename, $username, $password);
+    msg("$sitename added");
+    say $data<password> if not $password;
 }
 
 method Edit(Str @options) {

@@ -6,7 +6,8 @@ use Stomp::Key;
 use Stomp::Index;
 use JSON::Tiny;
 
-our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?) {
+our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
+returns Hash {
     my Str $password = $pw // Stomp::Utils::GeneratePassword(16);
     my Str %data =
         :$sitename,
@@ -17,11 +18,13 @@ our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?) {
     my Str $filename = Stomp::Utils::Sha256(Stomp::Utils::Random(32));
     writeDataFile($filename, $key.Encrypt($json));
     Stomp::Index::UpdateIndex($key, $sitename, $filename);
+    return { :$sitename, :$username, :$password };
 }
 
-our sub EditData(Stomp::Key $key, Str $sitename, %data) {
+our sub EditData(Stomp::Key $key, Str $sitename, %data) returns Hash {
     my $filename = getFilenameFromIndex($key, $sitename);
     writeDataFile($filename, $key.Encrypt(to-json(%data)));
+    return %data;
 }
 
 our sub GetData(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
