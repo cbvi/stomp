@@ -63,6 +63,10 @@ our sub PrepareRequest(Str $command, *%params) {
     return to-json(%r);
 }
 
+our sub IsSetup() {
+    return $Stomp::Config::RootDir.IO.d;
+}
+
 sub AskPassword(Bool :$confirm?) is export {
     my Str $p1 = "";
     my Str $p2 = "";

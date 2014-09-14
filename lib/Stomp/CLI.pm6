@@ -154,6 +154,10 @@ method Admin(Str @options) {
     Stomp::Daemon::Client.Command($command);
 }
 
+method Setup() {
+    Stomp::Data::Setup();
+}
+
 method Usage(Str $hint?) {
     msg($hint) if $hint;
     say "\t$*PROGRAM add sitename username [password]";

@@ -53,6 +53,31 @@ our sub ListData(Stomp::Key $key) returns Array {
     return @sites;
 }
 
+our sub SetupData() {
+    header("Welcome to $*PROGRAM");
+    msg('getting things ready...');
+    xMkdir($Stomp::Config::RootDir);
+    xChmod(0o700, $Stomp::Config::RootDir);
+    xMkdir($Stomp::Config::KeyDir);
+    xMkdir($Stomp::Config::DataDir);
+    msg("let's begin");
+
+    my $pw = AskPassword(:confirm);
+    my $key = Stomp::Utils::Random(1024 * 8);
+
+    my $fh = xOpen($Stomp::Config::Key);
+    my $skey = Stomp::Key.new();
+    $skey.Rekey($key);
+    xWrite($fh, $skey.Encrypt($key));
+    xClose($fh);
+    xChmod(0o400, $Stomp::Config::Key);
+    xChmod(0o500, $Stomp::Config::KeyDir);
+
+    $fh = xOpen($Stomp::Config::Index);
+    xWrite($fh, $skey.Encrypt('{ }'));
+    xClose($fh);
+}
+
 our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {
     return GetData($key, $sitename)<password>;
 }

@@ -2,6 +2,11 @@
 use v6;
 use lib 'lib';
 use Stomp::CLI;
+use Stomp::Utils;
+
+if not Stomp::Utils::IsSetup() {
+    Stomp::CLI::Setup();
+}
 
 Stomp::CLI.Usage() if not @*ARGS[0];
 
