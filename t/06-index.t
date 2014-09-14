@@ -2,7 +2,6 @@ use v6;
 use Test;
 use Stomp::Config;
 use Stomp::Index;
-use JSON::Tiny;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
@@ -15,7 +14,7 @@ my $key = Stomp::Key.new();
 $key.Unlock('OxychromaticBlowfishSwatDynamite');
 
 Stomp::Index::UpdateIndex($key, 'fakesite', 'NOT_A_REAL_FILE');
-my $index = from-json(Stomp::Index::GetIndex($key));
+my $index = Stomp::Index::GetIndex($key);
 
 is $index<fakesite>, 'NOT_A_REAL_FILE', 'added and got index result';
 $index{'fakesite'} :delete;

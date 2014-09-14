@@ -12,7 +12,7 @@ our sub UpdateIndex(Stomp::Key $key, Str $sitename, Str $filename) {
 }
 
 our sub GetIndex(Stomp::Key $key) {
-    return $key.Decrypt(readIndex());
+    return from-json($key.Decrypt(readIndex()));
 }
 
 sub readIndex {

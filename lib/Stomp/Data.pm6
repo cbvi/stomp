@@ -34,7 +34,7 @@ our sub GetData(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
 }
 
 our sub FindData(Stomp::Key $key, Str $searchterm) returns Array {
-    my $index = from-json(Stomp::Index::GetIndex($key));
+    my $index = Stomp::Index::GetIndex($key);
     my @found;
     for $index.kv -> $sitename, $filename {
         if $sitename ~~ / $searchterm / {
@@ -45,7 +45,7 @@ our sub FindData(Stomp::Key $key, Str $searchterm) returns Array {
 }
 
 our sub ListData(Stomp::Key $key) returns Array {
-    my $index = from-json(Stomp::Index::GetIndex($key));
+    my $index = Stomp::Index::GetIndex($key);
     my @sites;
     for $index.kv -> $sitename, $filename {
         @sites.push(GetData($key, $sitename, $filename));
@@ -87,7 +87,7 @@ our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {
 }
 
 sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {
-    my $index = from-json(Stomp::Index::GetIndex($key));
+    my $index = Stomp::Index::GetIndex($key);
     return $index{$sitename} // err("cannot find $sitename");
 }
 
