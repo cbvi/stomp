@@ -155,7 +155,7 @@ method Admin(Str @options) {
 }
 
 method Setup() {
-    Stomp::Data::Setup();
+    Stomp::Data::SetupData();
 }
 
 method Usage(Str $hint?) {
