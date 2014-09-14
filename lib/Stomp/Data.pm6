@@ -67,15 +67,19 @@ our sub SetupData() {
 
     my $fh = xOpen($Stomp::Config::Key);
     my $skey = Stomp::Key.new();
-    $skey.Rekey($key);
+    $skey.Rekey($pw);
     xWrite($fh, $skey.Encrypt($key));
     xClose($fh);
     xChmod(0o400, $Stomp::Config::Key);
     xChmod(0o500, $Stomp::Config::KeyDir);
 
     $fh = xOpen($Stomp::Config::Index);
+    $skey.Rekey($key);
     xWrite($fh, $skey.Encrypt('{ }'));
     xClose($fh);
+
+    msg("all done, have fun!");
+    exit(0);
 }
 
 our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {
