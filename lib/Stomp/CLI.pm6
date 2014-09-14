@@ -83,8 +83,9 @@ method Find(Str @options) {
     my @data = Stomp::Data::FindData($key, $search);
 
     for @data -> $site {
-        print $site<sitename>;
-        print "\t\t";
+        my $s = $site<sitename>;
+        print $s;
+        print " " xx ($s.chars < 16 ?? 16 - $s.chars !! 16);
         print "({$site<username>})";
         say();
     }
@@ -94,8 +95,9 @@ method List(Str @options) {
     my $key = Stomp::Key.Smith();
     my @data = Stomp::Data::ListData($key);
     for @data -> $site {
+        my $s = $site<sitename>;
         print $site<sitename>;
-        print "\t\t";
+        print " " xx ($s.chars < 16 ?? 16 - $s.chars !! 16);
         print "({$site<username>})";
         say();
     }
