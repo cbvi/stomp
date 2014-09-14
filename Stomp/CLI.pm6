@@ -24,7 +24,9 @@ method Add(Str @options) {
 
     my $key = Stomp::Key.Smith();
     my $data = Stomp::Data::AddData($key, $sitename, $username, $password);
-    msg("$sitename added");
+
+    header($sitename);
+    msg("added");
     say $data<password> if not $password;
 }
 
@@ -52,11 +54,14 @@ method Edit(Str @options) {
         $data{$name} = $value;
     }
 
+    Stomp::Data::EditData($key, $sitename, $data);
+
+    header($sitename);
+    msg("updated");
+
     for $data.kv -> $param, $value {
         say "$param: $value";
     }
-
-    Stomp::Data::EditData($key, $sitename, $data);
 }
 
 method Get(Str @options) {
@@ -64,7 +69,11 @@ method Get(Str @options) {
     my $sitename = @options.shift;
     my $key = Stomp::Key.Smith();
     my $data = Stomp::Data::GetData($key, $sitename);
-    say $data.perl;
+
+    header($sitename);
+    for $data.kv -> $param, $value {
+        say "$param: $value";
+    }
 }
 
 method Find(Str @options) {
@@ -72,8 +81,11 @@ method Find(Str @options) {
     my $key = Stomp::Key.Smith();
     my @data = Stomp::Data::FindData($key, $search);
 
-    for @data {
-        say $_.perl;
+    for @data -> $site {
+        print $site<sitename>;
+        print "\t\t";
+        print "({$site<username>})";
+        say();
     }
 }
 
