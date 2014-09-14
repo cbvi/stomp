@@ -63,7 +63,7 @@ our sub SetupData(Str :$auto) {
     msg("let's begin");
 
     my $pw = $auto // AskPassword(:confirm);
-    my $key = Stomp::Utils::Random(1024 * 8);
+    my $key = Stomp::Utils::Random(1024 * 5);
 
     my $fh = xOpen($Stomp::Config::Key);
     my $skey = Stomp::Key.new();
