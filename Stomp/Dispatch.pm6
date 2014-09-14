@@ -44,7 +44,7 @@ method !Key(%request, Stomp::Key $key) {
 }
 
 method !Shutdown(%request, $daemon) {
-    note "received shutdown command";
+    note "$*PROGRAM: received shutdown command";
     $daemon.Shutdown();
     panic("still alive after shutdown");
 }

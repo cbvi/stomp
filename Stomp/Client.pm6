@@ -40,5 +40,8 @@ method Key() {
 
 method Shutdown() {
     my $req = Stomp::Utils::PrepareRequest("shutdown");
-    return Stomp::Utils::DoRequest($req);
+    note "server sent shutdown command";
+    my $result = Stomp::Utils::DoRequest($req, :noreply);
+    note "done";
+    return $result;
 }

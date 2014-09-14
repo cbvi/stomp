@@ -40,7 +40,7 @@ our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
     return $gen;
 }
 
-our sub DoRequest(Str $data) {
+our sub DoRequest(Str $data, Bool :$noreply?) {
     my $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
         port => $Stomp::Config::Port);
     $sock.send($data ~ "\n");
@@ -52,7 +52,7 @@ our sub DoRequest(Str $data) {
         $response ~= $r;
     }
 
-    return from-json($response);
+    return !$noreply ?? from-json($response) !! from-json('{ }');
 }
 
 our sub PrepareRequest(Str $command, *%params) {
