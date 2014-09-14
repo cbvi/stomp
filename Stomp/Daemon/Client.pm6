@@ -1,4 +1,4 @@
-class Stomp::Client;
+class Stomp::Daemon::Client;
 
 use Stomp::Utils;
 

@@ -2,7 +2,7 @@ class Stomp::Key;
 
 use Stomp::Config;
 use Stomp::Utils;
-use Stomp::Client;
+use Stomp::Daemon::Client;
 
 has Str $!DecodedKey;
 
@@ -10,7 +10,7 @@ has Bool $.Locked is rw = True;
 
 method Smith() returns Stomp::Key {
     my $key = Stomp::Key.new();
-    my $dk = Stomp::Client.Command('key');
+    my $dk = Stomp::Daemon::Client.Command('key');
     $key.Rekey($dk<key>);
     return $key;
 }

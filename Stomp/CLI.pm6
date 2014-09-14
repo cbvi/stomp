@@ -1,6 +1,6 @@
 class Stomp::CLI;
 
-use Stomp::Client;
+use Stomp::Daemon::Client;
 use Stomp::Data;
 use Stomp::Utils;
 
@@ -12,6 +12,7 @@ method Command(Str $command, Str @options) {
         when <edit> { self.Edit(@options) }
         when <list> { self.List(@options) }
         when <gen> { self.Generate(@options) }
+        when <admin> { self.Admin(@options) }
         default { self.Usage() }
     }
 }
@@ -145,6 +146,12 @@ method Generate(Str @options) {
     my Bool $special = $set eq 'a' ?? False !! True;
     my $length = $len.Int;
     say Stomp::Utils::GeneratePassword($length, :$special);
+}
+
+method Admin(Str @options) {
+    my $command = @options.shift;
+    my $result = Stomp::Daemon::Client.Command($command);
+    say $result.perl;
 }
 
 method Usage(Str $hint?) {
