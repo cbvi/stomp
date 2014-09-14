@@ -146,3 +146,15 @@ method Generate(Str @options) {
     my $length = $len.Int;
     say Stomp::Utils::GeneratePassword($length, :$special);
 }
+
+method Usage(Str $hint?) {
+    msg($hint) if $hint;
+    say "\t$*PROGRAM add sitename username [password]";
+    say "\t$*PROGRAM get sitename";
+    say "\t$*PROGRAM find sitename";
+    say "\t$*PROGRAM list";
+    say "\t$*PROGRAM edit sitename";
+    say "\t$*PROGRAM gen [a = alphanumerical|s = include symbols] [length]";
+    say "\t$*PROGRAM [x|clip] sitename";
+    exit(0);
+}
