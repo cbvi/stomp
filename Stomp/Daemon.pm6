@@ -1,7 +1,7 @@
 class Stomp::Daemon;
 
 use Stomp::Config;
-use Stomp::Dispatch;
+use Stomp::Daemon::Dispatch;
 use Stomp::Key;
 
 my Str $localhost = $Stomp::Config::Host;
@@ -21,7 +21,7 @@ method StopCollaborateAndListen() {
     $!Socket = IO::Socket::Async.listen($localhost, $localport);
     $!Tap = $!Socket.tap( -> $connection {
         $connection.chars_supply.tap( -> $message {
-            my $response = Stomp::Dispatch.Command($message, self);
+            my $response = Stomp::Daemon::Dispatch.Command($message, self);
             await $connection.send($response);
             $connection.close();
         });

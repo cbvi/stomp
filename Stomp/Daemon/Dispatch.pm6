@@ -1,4 +1,4 @@
-class Stomp::Dispatch;
+class Stomp::Daemon::Dispatch;
 
 use JSON::Tiny;
 use Stomp::Utils;
@@ -40,7 +40,7 @@ method !Key(%request, Stomp::Key $key) {
     if $key.Locked {
         return { error => 'locked' };
     }
-    return { command => %request<command>, key => $$key.GetKey() };
+    return { command => %request<command>, key => $key.Key() };
 }
 
 method !Shutdown(%request, $daemon) {

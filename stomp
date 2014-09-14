@@ -1,13 +1,16 @@
 #!/usr/bin/env perl6
 use v6;
 use lib '.';
-use Stomp::Client;
+use Stomp::CLI;
 
-Stomp::Client.Usage() if not @*ARGS[0];
+#Stomp::Client.Usage() if not @*ARGS[0];
 
-my Str $command = @*ARGS.shift;
-my Str @options = @*ARGS;
+#my Str $command = @*ARGS.shift;
+#my Str @options = @*ARGS;
 
-say Stomp::Client.Command($command);
+#say Stomp::Client.Command($command);
+my Str @a = <f451 guy>;
+
+Stomp::CLI.Add(@a);
 
 # vim: ft=perl6
