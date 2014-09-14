@@ -92,8 +92,11 @@ method Find(Str @options) {
 method List(Str @options) {
     my $key = Stomp::Key.Smith();
     my @data = Stomp::Data::ListData($key);
-    for @data {
-        say $_.perl;
+    for @data -> $site {
+        print $site<sitename>;
+        print "\t\t";
+        print "({$site<username>})";
+        say();
     }
 }
 
