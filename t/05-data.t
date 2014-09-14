@@ -4,6 +4,8 @@ use Stomp::Config;
 use Stomp::Key;
 use Shell::Command;
 
+plan 12;
+
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
 $Stomp::Config::DataDir = 't/testdir/data';
@@ -65,3 +67,5 @@ $key.Unlock('OxychromaticBlowfishSwatDynamite');
 
  is Stomp::Data::PasswordData($key, 'deepweb'), $later<password>, 'got password';
 }
+
+done();

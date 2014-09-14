@@ -1,6 +1,8 @@
 use Test;
 use Stomp::Utils;
 
+plan 6;
+
 my $key = "Frumious Bandersnatch!";
 my $data = "\"Beware the Jabberwock, my son!\nThe jaws that bite, the claws that catch!'";
 
@@ -14,3 +16,5 @@ is Stomp::Utils::GeneratePassword(32).chars, 32, 'generate password works';
 ok Stomp::Utils::GeneratePassword(1024, :special).index('?'), 'special chars';
 
 is Stomp::Utils::PrepareRequest("seekmanxomefoe", jabberwocky => 'eyes of flame', bandersnatch => 'frumious'), '{ "command" : "seekmanxomefoe", "jabberwocky" : "eyes of flame", "bandersnatch" : "frumious" }', 'prepare request works';
+
+done();

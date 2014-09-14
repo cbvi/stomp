@@ -138,13 +138,6 @@ sub err(Str $e) is export {
 
 sub panic(Str $err) is export {
     my $retort = "# this is a fatal error, abandoning ship.";
-    my Int $len = ($retort.chars, "# $err".chars).max;
-    $len = 76 if $len > 76;
-    print ' ' xx 4;
-    print "#" xx $len;
-    say '';
-    print ' ' xx 4;
     say "# $err";
-    print ' ' xx 4;
     die $retort;
 }

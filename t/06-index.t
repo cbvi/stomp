@@ -3,6 +3,8 @@ use Test;
 use Stomp::Config;
 use Stomp::Index;
 
+plan 2;
+
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
 $Stomp::Config::DataDir = 't/testdir/data';
@@ -21,3 +23,5 @@ $index{'fakesite'} :delete;
 
 my $path = "{$Stomp::Config::DataDir}/{$index.pick(1).value}";
 ok $path.IO.f, 'path to random file in index exists';
+
+done();
