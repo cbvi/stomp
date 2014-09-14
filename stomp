@@ -3,14 +3,11 @@ use v6;
 use lib '.';
 use Stomp::CLI;
 
-#Stomp::Client.Usage() if not @*ARGS[0];
+Stomp::Client.Usage() if not @*ARGS[0];
 
-#my Str $command = @*ARGS.shift;
-#my Str @options = @*ARGS;
+my Str $command = @*ARGS.shift;
+my Str @options = @*ARGS;
 
-#say Stomp::Client.Command($command);
-my Str @a = <f451 guy>;
-
-Stomp::CLI.Add(@a);
+Stomp::CLI.Command($command, @options);
 
 # vim: ft=perl6
