@@ -147,6 +147,5 @@ sub panic(Str $err) is export {
     print ' ' xx 4;
     say "# $err";
     print ' ' xx 4;
-    say $retort;
-    exit(1);
+    die $retort;
 }
