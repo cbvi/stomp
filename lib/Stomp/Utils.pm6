@@ -51,7 +51,7 @@ our sub DoRequest(Str $data, Bool :$noreply?) {
         last if $r eq "";
         $response ~= $r;
     }
-
+    $sock.close();
     return !$noreply ?? from-json($response) !! from-json('{ }');
 }
 
