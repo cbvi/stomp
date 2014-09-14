@@ -27,31 +27,39 @@ method !DoSomething(%request, $d) {
 }
 
 method !Unlock(%request, Stomp::Key $key) {
-    info('unlock');
+    cmd('unlock');
     $key.Unlock(%request<password>);
+    res('locked', $key.Locked);
     return { command => %request<command>, locked => $key.Locked };
 }
 
 method !Lock(%request, Stomp::Key $key) {
-    info('lock');
+    cmd('lock');
     $key.Lock();
+    res('locked', $key.Locked);
     return { command => %request<command>, locked => $key.Locked };
 }
 
 method !Key(%request, Stomp::Key $key) {
-    info('key');
+    cmd('key');
     if $key.Locked {
+        res('error', 'locked');
         return { error => 'locked' };
     }
+    res('key', '<hidden>');
     return { command => %request<command>, key => $key.Key() };
 }
 
 method !Shutdown(%request, $daemon) {
-    info('shutdown');
+    cmd('shutdown');
     $daemon.Shutdown();
     panic("still alive after shutdown");
 }
 
-sub info(Str $command) {
+sub cmd(Str $command) {
     note "$*PROGRAM: received $command command";
+}
+
+sub res(Str $val, $res) {
+    note "$*PROGRAM: $val => $res";
 }
