@@ -133,8 +133,7 @@ sub msg(Str $m) is export {
 }
 
 sub err(Str $e) is export {
-    msg($e);
-    exit(1);
+    die "==> $e";
 }
 
 sub panic(Str $err) is export {
