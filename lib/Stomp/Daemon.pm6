@@ -8,16 +8,16 @@ my Str $localhost = $Stomp::Config::Host;
 my Int $localport = $Stomp::Config::Port;
 
 has $!Socket;
-has Promise $!Promise;
 has Tap $!Tap;
 
 has Stomp::Key $.Key;
+
+has Bool $!Running = True;
 
 method StopCollaborateAndListen() {
     note "$*PROGRAM: starting...";
     $!Key = Stomp::Key.new();
 
-    $!Promise = Promise.new();
     $!Socket = IO::Socket::Async.listen($localhost, $localport);
     $!Tap = $!Socket.tap( -> $connection {
         $connection.chars_supply.tap( -> $message {
@@ -27,17 +27,19 @@ method StopCollaborateAndListen() {
         });
         Thread.yield();
     });
-    Thread.yield();
     note "$*PROGRAM: started";
-    await $!Promise;
+    while ($!Running) {
+        Thread.yield();
+        sleep(1);
+    }
+    note "$*PROGRAM: stopped";
 }
 
 method Shutdown() {
     note "$*PROGRAM: stopping...";
     $!Key.Finish($!Key);
     $!Tap.close();
-    $!Promise.keep(1);
-    note "$*PROGRAM: stopped";
-    sleep(2);
-    exit(0);
+    # FIXME 'Illegal attempt to pop empty temporary root stack'
+    #$!Promise.keep(1);
+    $!Running = False;
 }

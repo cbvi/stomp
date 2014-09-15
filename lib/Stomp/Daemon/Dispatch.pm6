@@ -53,7 +53,7 @@ method !Key(%request, Stomp::Key $key) {
 method !Shutdown(%request, $daemon) {
     cmd('shutdown');
     $daemon.Shutdown();
-    panic("still alive after shutdown");
+    return { command => 'shutdown' };
 }
 
 sub cmd(Str $command) {

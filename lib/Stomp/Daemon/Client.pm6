@@ -23,6 +23,7 @@ method Lock() {
     if $res<locked> {
         msg("Locked!");
     }
+    return $res;
 }
 
 method Unlock() {
@@ -33,6 +34,7 @@ method Unlock() {
     if not $res<locked> {
         msg("Unlocked!");
     }
+    return $res;
 }
 
 method Key() {
@@ -49,5 +51,8 @@ method Shutdown() {
     my $req = Stomp::Utils::PrepareRequest("shutdown");
     msg("server sent shutdown command");
     my $result = Stomp::Utils::DoRequest($req, :noreply);
-    msg("done");
+    if $result {
+        panic("received response from server after shutdown");
+    }
+    return $result;
 }
