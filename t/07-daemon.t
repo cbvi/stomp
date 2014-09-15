@@ -29,8 +29,17 @@ $t.run();
 }
 
 {
+ my $req = Stomp::Utils::PrepareRequest("unlock",
+    password => 'OpenUpAndLetMeIn');
+ my $reply = Stomp::Utils::DoRequest($req);
+ ok $reply<error>, 'error field was return with wrong password';
+ is $reply<error>, 'password', 'error field is password';
+}
+
+{
  my $req = Stomp::Utils::PrepareRequest("key");
  my $reply = Stomp::Utils::DoRequest($req);
+ is $reply<error>, 'locked', 'error is locked after key request while locked';
 
  $req = Stomp::Utils::PrepareRequest("unlock",
     password => 'OxychromaticBlowfishSwatDynamite');
