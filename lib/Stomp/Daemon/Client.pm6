@@ -34,6 +34,9 @@ method Unlock() {
     if $res<locked> :exists && not $res<locked> {
         msg("Unlocked!");
     }
+    elsif $res<error> && $res<error> eq 'password' {
+        msg("Decryption failed, check your password");
+    }
     return $res;
 }
 
