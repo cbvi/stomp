@@ -31,7 +31,7 @@ method Unlock() {
         password => AskPassword());
     my $res = Stomp::Utils::DoRequest($req);
 
-    if not $res<locked> {
+    if $res<locked> :exists && not $res<locked> {
         msg("Unlocked!");
     }
     return $res;

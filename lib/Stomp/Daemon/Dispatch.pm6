@@ -30,6 +30,10 @@ method !Unlock(%request, Stomp::Key $key) {
     cmd('unlock');
     $key.Unlock(%request<password>);
     res('locked', $key.Locked);
+    CATCH {
+        res('error', 'password');
+        return { error => 'password' }
+    };
     return { command => %request<command>, locked => $key.Locked };
 }
 
