@@ -49,9 +49,13 @@ $t.run();
 
 {
  # FIXME shutting down the daemon in test causes weirdness, thread problem?
- #my $req = Stomp::Utils::PrepareRequest("shutdown");
- #Stomp::Utils::DoRequest($req);
- skip 'Illegal attempt to pop empty temporary root stack';
+ my $req = Stomp::Utils::PrepareRequest("shutdown");
+ Stomp::Utils::DoRequest($req);
+ #skip 'Illegal attempt to pop empty temporary root stack';
+ ok 1, 'still alive after shutdown';
+
+ $req = Stomp::Utils::PrepareRequest("lock");
+ dies_ok { Stomp::Utils::DoRequest($req) } , 'server is shutdown';
 }
 
 done();
