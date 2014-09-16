@@ -1,5 +1,6 @@
 use AES256;
 use Stomp::Config;
+use Stomp::Exception;
 use JSON::Tiny;
 
 module Stomp::Utils;
@@ -137,7 +138,7 @@ sub msg(Str $m) is export {
 }
 
 sub err(Str $e) is export {
-    die "==> $e";
+    Stomp::Exception.new(message => $e).throw;
 }
 
 sub panic(Str $err) is export {
