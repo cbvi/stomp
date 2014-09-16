@@ -41,8 +41,12 @@ our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
 }
 
 our sub DoRequest(Str $data, Bool :$noreply?) {
-    my $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
-        port => $Stomp::Config::Port);
+    my $sock;
+    try {
+        $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
+            port => $Stomp::Config::Port);
+        CATCH { err("could not connect, is the daemon running?"); }
+    }
     $sock.send($data ~ "\n");
 
     my $response = '';
