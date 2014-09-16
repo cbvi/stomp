@@ -21,6 +21,7 @@ $t.run();
  my $req = Stomp::Utils::PrepareRequest("unlock",
     password => 'OxychromaticBlowfishSwatDynamite');
  Stomp::Utils::DoRequest($req);
+ sleep(2);
 }
 
 {
