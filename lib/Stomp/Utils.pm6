@@ -138,7 +138,8 @@ sub msg(Str $m) is export {
 }
 
 sub err(Str $e) is export {
-    Stomp::Exception.new(message => $e).throw;
+    my $message = "==> $e";
+    Stomp::Exception.new(:$message).throw;
 }
 
 sub panic(Str $err) is export {
