@@ -19,16 +19,22 @@ method Command(Str $command, Str @options) {
 
 method Add(Str @options) {
     self.Usage("must specify sitename and username") if @options.elems < 2;
+    my Bool $interactive = False;
+    if @options[0] eq '-i' {
+        $interactive = True;
+        @options.shift;
+    }
     my $sitename = @options.shift;
     my $username = @options.shift;
-    my $password = @options.shift // Str;
+    my Str $password;
+    $password = AskPassword("password for $sitename: ") if $interactive;
 
     my $key = Stomp::Key.Smith();
     my $data = Stomp::Data::AddData($key, $sitename, $username, $password);
 
     header($sitename);
     msg("added");
-    say $data<password> if not $password;
+    say $data<password> if not $interactive;
 }
 
 method Edit(Str @options) {
@@ -162,7 +168,7 @@ method Setup() {
 
 method Usage(Str $hint?) {
     msg($hint) if $hint;
-    say "\t$*PROGRAM add sitename username [password]";
+    say "\t$*PROGRAM add [-i] sitename username";
     say "\t$*PROGRAM get sitename";
     say "\t$*PROGRAM find sitename";
     say "\t$*PROGRAM list";

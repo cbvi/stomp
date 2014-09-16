@@ -72,11 +72,11 @@ our sub IsSetup() {
     return $Stomp::Config::RootDir.IO.d;
 }
 
-sub AskPassword(Bool :$confirm?) is export {
+sub AskPassword(Str $prompt = "Master password: ", Bool :$confirm?) is export {
     my Str $p1 = "";
     my Str $p2 = "";
     loop {
-        $p1 = prompt("Master password: ");
+        $p1 = prompt($prompt);
         return $p1 if not $confirm;
         return $p1 if $p1 eq prompt("Confirm: ");
         msg("Passwords did not match, try again");
