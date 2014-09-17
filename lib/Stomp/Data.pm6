@@ -8,12 +8,15 @@ use JSON::Tiny;
 
 our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
 returns Hash {
+    my $index = Stomp::Index::GetIndex($key);
+    if $index{$sitename} :exists {
+        err("$sitename already exists");
+    }
     my Str $password = $pw // Stomp::Utils::GeneratePassword(16);
     my Str %data =
         :$sitename,
         :$username,
-        :$password
-    ;
+        :$password;
     my Str $json = to-json(%data);
     my Str $filename = Stomp::Utils::Sha256(Stomp::Utils::Random(32));
     writeDataFile($filename, $key.Encrypt($json));
