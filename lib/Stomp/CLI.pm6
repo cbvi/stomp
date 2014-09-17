@@ -168,12 +168,12 @@ method Setup() {
 
 method Usage(Str $hint?) {
     msg($hint) if $hint;
-    say "\t$*PROGRAM add [-i] sitename username";
-    say "\t$*PROGRAM get sitename";
-    say "\t$*PROGRAM find sitename";
-    say "\t$*PROGRAM list";
-    say "\t$*PROGRAM edit sitename";
-    say "\t$*PROGRAM gen [a = alphanumerical|s = include symbols] [length]";
-    say "\t$*PROGRAM [x|clip] sitename";
+    say "\t$*PROGRAM_NAME add [-i] sitename username";
+    say "\t$*PROGRAM_NAME get sitename";
+    say "\t$*PROGRAM_NAME find sitename";
+    say "\t$*PROGRAM_NAME list";
+    say "\t$*PROGRAM_NAME edit sitename";
+    say "\t$*PROGRAM_NAME gen [as] [length]";
+    say "\t$*PROGRAM_NAME [x|clip] sitename";
     exit(0);
 }

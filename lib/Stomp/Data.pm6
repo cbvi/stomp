@@ -54,7 +54,7 @@ our sub ListData(Stomp::Key $key) returns Array {
 }
 
 our sub SetupData(Str :$auto) {
-    header("Welcome to $*PROGRAM");
+    header("Welcome to $*PROGRAM_NAME");
     msg('getting things ready...');
     xMkdir($Stomp::Config::RootDir);
     xChmod(0o700, $Stomp::Config::RootDir);

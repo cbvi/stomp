@@ -15,7 +15,7 @@ has Stomp::Key $.Key;
 has Bool $!Running = True;
 
 method StopCollaborateAndListen() {
-    note "$*PROGRAM: starting...";
+    note "$*PROGRAM_NAME: starting...";
     $!Key = Stomp::Key.new();
 
     $!Socket = IO::Socket::Async.listen($localhost, $localport);
@@ -27,16 +27,16 @@ method StopCollaborateAndListen() {
         });
         Thread.yield();
     });
-    note "$*PROGRAM: started";
+    note "$*PROGRAM_NAME: started";
     while ($!Running) {
         Thread.yield();
         sleep(1);
     }
-    note "$*PROGRAM: stopped";
+    note "$*PROGRAM_NAME: stopped";
 }
 
 method Shutdown() {
-    note "$*PROGRAM: stopping...";
+    note "$*PROGRAM_NAME: stopping...";
     $!Key.Finish($!Key);
     $!Tap.close();
     # FIXME 'Illegal attempt to pop empty temporary root stack'

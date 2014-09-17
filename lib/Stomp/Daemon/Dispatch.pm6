@@ -61,9 +61,9 @@ method !Shutdown(%request, $daemon) {
 }
 
 sub cmd(Str $command) {
-    note "$*PROGRAM: received $command command";
+    note "$*PROGRAM_NAME: received $command command";
 }
 
 sub res(Str $val, $res) {
-    note "$*PROGRAM: $val => $res";
+    note "$*PROGRAM_NAME: $val => $res";
 }
