@@ -30,6 +30,7 @@ our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
 
     my Str $gen = '';
 
+    # FIXME use random_bytes once Inline::Perl5 can handle that properly
     my $ur = open('/dev/urandom');
 
     while ($gen.chars < $len) {
