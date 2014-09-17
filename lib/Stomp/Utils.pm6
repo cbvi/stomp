@@ -112,6 +112,11 @@ sub xSlurp(Str $file) is export {
     CATCH { panic("could not slurp $file"); }
 }
 
+sub xUnlink(Str $file) is export {
+    unlink($file);
+    CATCH { panic("could not delete $file"); }
+}
+
 our sub AskYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
     panic("must specify a default") if not $yes and not $no;
     panic("both yes and no cannot be the default") if $yes and $no;

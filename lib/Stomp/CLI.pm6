@@ -8,6 +8,7 @@ method Command(Str $command, Str @options) {
     given $command {
         when <add> { self.Add(@options) }
         when <get> { self.Get(@options) }
+        when <remove> { self.Remove(@options) }
         when <find> { self.Find(@options) }
         when <edit> { self.Edit(@options) }
         when <list> { self.List(@options) }
@@ -81,6 +82,16 @@ method Get(Str @options) {
     for $data.kv -> $param, $value {
         say "$param: $value";
     }
+}
+
+method Remove(Str @options) {
+    self.Usage("must specify sitename") if @options.elems < 1;
+    my $sitename = @options.shift;
+    my $key = Stomp::Key.Smith();
+    my $sure = Stomp::Utils::AskYesOrNo("delete $sitename?", :no);
+    err("aborted!") if not $sure;
+    Stomp::Data::RemoveData($key, $sitename);
+    msg("removed $sitename");
 }
 
 method Find(Str @options) {

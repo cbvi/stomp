@@ -56,6 +56,14 @@ our sub ListData(Stomp::Key $key) returns Array {
     return @sites;
 }
 
+our sub RemoveData(Stomp::Key $key, Str $sitename) returns Hash {
+    my $index = Stomp::Index::GetIndex($key);
+    my $filename = $index{$sitename} // err("$sitename does not exist");
+    removeDataFile($filename);
+    Stomp::Index::RemoveFromIndex($key, $sitename);
+    return { :$sitename };
+}
+
 our sub SetupData(Str :$auto) {
     header("Welcome to $*PROGRAM_NAME");
     msg('getting things ready...');
@@ -99,6 +107,10 @@ sub writeDataFile(Str $filename, Str $data) {
     xWrite($fh, $data);
     xClose($fh);
     xChmod(0o600, $Stomp::Config::DataDir ~ "/$filename");
+}
+
+sub removeDataFile(Str $filename) {
+    xUnlink($Stomp::Config::DataDir ~ "/$filename");
 }
 
 sub readDataFile(Str $filename) {
