@@ -6,16 +6,16 @@ use Stomp::Utils;
 
 method Command(Str $command, Str @options) {
     given $command {
-        when <add> { self.Add(@options) }
-        when <get> { self.Get(@options) }
-        when <remove> { self.Remove(@options) }
-        when <find> { self.Find(@options) }
-        when <edit> { self.Edit(@options) }
-        when <list> { self.List(@options) }
-        when <gen> { self.Generate(@options) }
-        when <x> | <clip> { self.Clip(@options) }
-        when <admin> { self.Admin(@options) }
-        default { self.Usage() }
+        when <add>          { self.Add(@options) }
+        when <get>          { self.Get(@options) }
+        when <remove>       { self.Remove(@options) }
+        when <find>         { self.Find(@options) }
+        when <edit>         { self.Edit(@options) }
+        when <list>         { self.List(@options) }
+        when <gen>          { self.Generate(@options) }
+        when <x> | <clip>   { self.Clip(@options) }
+        when <admin>        { self.Admin(@options) }
+        default             { self.Usage() }
     }
 }
 
