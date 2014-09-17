@@ -13,6 +13,7 @@ method Command(Str $command, Str @options) {
         when <edit> { self.Edit(@options) }
         when <list> { self.List(@options) }
         when <gen> { self.Generate(@options) }
+        when <x> | <clip> { self.Clip(@options) }
         when <admin> { self.Admin(@options) }
         default { self.Usage() }
     }
