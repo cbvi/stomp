@@ -4,9 +4,9 @@ class AES256;
 
 my $ip5 = Inline::Perl5.new();
 
-$ip5.run('use strict; use warnings;');
-$ip5.run('use Crypt::CBC; use MIME::Base64;');
-$ip5.run('use Digest::SHA qw(sha256_hex);');
+$ip5.use('Crypt::CBC');
+$ip5.use('MIME::Base64');
+$ip5.use('Digest::SHA qw(sha256_hex)');
 
 my Str $sub_encrypt = '
     sub encrypt {
