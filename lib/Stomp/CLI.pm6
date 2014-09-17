@@ -181,10 +181,12 @@ method Usage(Str $hint?) {
     msg($hint) if $hint;
     say "\t$*PROGRAM_NAME add [-i] sitename username";
     say "\t$*PROGRAM_NAME get sitename";
+    say "\t$*PROGRAM_NAME remove sitename";
     say "\t$*PROGRAM_NAME find sitename";
     say "\t$*PROGRAM_NAME list";
     say "\t$*PROGRAM_NAME edit sitename";
     say "\t$*PROGRAM_NAME gen [as] [length]";
-    say "\t$*PROGRAM_NAME [x|clip] sitename";
+    say "\t$*PROGRAM_NAME clip|x sitename";
+    say "\t$*PROGRAM_NAME admin [lock|unlock|key|shutdown]";
     exit(0);
 }
