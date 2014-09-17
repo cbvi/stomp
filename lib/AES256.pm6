@@ -8,32 +8,6 @@ $ip5.use('Crypt::CBC');
 $ip5.use('MIME::Base64');
 $ip5.use('Digest::SHA qw(sha256_hex)');
 
-my Str $sub_encrypt = '
-    sub encrypt {
-        my ($key, $data) = @_;
-        my $c = Crypt::CBC->new(
-            -key        => $key,
-            -cipher     => "Crypt::Rijndael",
-            -keysize    => 32
-        );
-        my $enc = encode_base64($c->encrypt($data));
-        $c->finish();
-        return $enc;
-    }';
-
-my Str $sub_decrypt = '
-    sub decrypt {
-        my ($key, $data) = @_;
-        my $c = Crypt::CBC->new(
-            -key        => $key,
-            -cipher     => "Crypt::Rijndael",
-            -keysize    => 32
-        );
-        my $dec = $c->decrypt(decode_base64($data));
-        $c->finish();
-        return $dec;
-    }';
-
 my Str $sub_randombytes = '
     sub randombytes {
         my $len = shift;
@@ -46,8 +20,6 @@ my Str $sub_sha256sum = '
         return sha256_hex($data);
     }';
 
-$ip5.run($sub_encrypt);
-$ip5.run($sub_decrypt);
 $ip5.run($sub_randombytes);
 $ip5.run($sub_sha256sum);
 
@@ -57,12 +29,22 @@ END {
     $ip5.DESTROY;
 }
 
+sub cbc(Str $key) {
+    return $ip5.invoke('Crypt::CBC', 'new', $key, 'Crypt::Rijndael');
+}
+
 method Encrypt(Str $key, Str $data) returns Str {
-    return $ip5.call('main::encrypt', $key, $data);
+    my $CBC = cbc($key);
+    my $enc = $CBC.encrypt_hex($data);
+    try { $CBC.finish(); }
+    return $enc;
 }
 
 method Decrypt(Str $key, Str $data) returns Str {
-    return $ip5.call('main::decrypt', $key, $data);
+    my $CBC = cbc($key);
+    my $dec = $CBC.decrypt_hex($data);
+    try { $CBC.finish(); }
+    return $dec;
 }
 
 method RandomBytes(Int $len) {
