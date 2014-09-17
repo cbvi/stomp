@@ -26,14 +26,14 @@ $t.run();
 
 {
  my $command = 'add';
- my Str @options = <example.org jwocky>;
+ my Str @options = <example.com jwocky>;
  Stomp::CLI.Command($command, @options);
 }
 
 {
  my $key = Stomp::Key.new();
  $key.Unlock('OxychromaticBlowfishSwatDynamite');
- my $data = Stomp::Data::GetData($key, 'example.org');
+ my $data = Stomp::Data::GetData($key, 'example.com');
  is $data<username>, 'jwocky', 'data was added';
 }
 
