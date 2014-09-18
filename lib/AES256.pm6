@@ -19,14 +19,12 @@ sub cbc(Str $key) {
 method Encrypt(Str $key, Str $data) returns Str {
     my $CBC = cbc($key);
     my $enc = $CBC.encrypt_hex($data);
-    try { $CBC.finish(); }
     return $enc;
 }
 
 method Decrypt(Str $key, Str $data) returns Str {
     my $CBC = cbc($key);
     my $dec = $CBC.decrypt_hex($data);
-    try { $CBC.finish(); }
     return $dec;
 }
 
