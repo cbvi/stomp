@@ -32,7 +32,7 @@ STHelper::StartServer();
 {
  my $key = Stomp::Key.new();
  $key.unlock('OxychromaticBlowfishSwatDynamite');
- my $data = Stomp::Data::GetData($key, 'example.com');
+ my $data = Stomp::Data::get($key, 'example.com');
  is $data<username>, 'jwocky', 'data was added';
 }
 

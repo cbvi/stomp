@@ -6,7 +6,7 @@ use Stomp::Key;
 use Stomp::Index;
 use JSON::Tiny;
 
-our sub AddData(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
+our sub add(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
 returns Hash {
     my $index = Stomp::Index::GetIndex($key);
     if $index{$sitename} :exists {
@@ -19,52 +19,52 @@ returns Hash {
         :$password;
     my Str $json = to-json(%data);
     my Str $filename = Stomp::Utils::sha256(Stomp::Utils::random(32));
-    writeDataFile($filename, $key.encrypt($json));
+    write-data-file($filename, $key.encrypt($json));
     Stomp::Index::UpdateIndex($key, $sitename, $filename);
     return { :$sitename, :$username, :$password };
 }
 
-our sub EditData(Stomp::Key $key, Str $sitename, %data) returns Hash {
-    my $filename = getFilenameFromIndex($key, $sitename);
-    writeDataFile($filename, $key.encrypt(to-json(%data)));
+our sub edit(Stomp::Key $key, Str $sitename, %data) returns Hash {
+    my $filename = get-filename-from-index($key, $sitename);
+    write-data-file($filename, $key.encrypt(to-json(%data)));
     return %data;
 }
 
-our sub GetData(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
-    my $filename = $fn // getFilenameFromIndex($key, $sitename);
-    my $data = from-json($key.decrypt(readDataFile($filename)));
+our sub get(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
+    my $filename = $fn // get-filename-from-index($key, $sitename);
+    my $data = from-json($key.decrypt(read-data-file($filename)));
     return $data;
 }
 
-our sub FindData(Stomp::Key $key, Str $searchterm) returns Array {
+our sub find(Stomp::Key $key, Str $searchterm) returns Array {
     my $index = Stomp::Index::GetIndex($key);
     my @found;
     for $index.kv -> $sitename, $filename {
         if $sitename ~~ / $searchterm / {
-            @found.push(GetData($key, $sitename, $filename));
+            @found.push(get($key, $sitename, $filename));
         }
     }
     return @found;
 }
 
-our sub ListData(Stomp::Key $key) returns Array {
+our sub list(Stomp::Key $key) returns Array {
     my $index = Stomp::Index::GetIndex($key);
     my @sites;
     for $index.kv -> $sitename, $filename {
-        @sites.push(GetData($key, $sitename, $filename));
+        @sites.push(get($key, $sitename, $filename));
     }
     return @sites;
 }
 
-our sub RemoveData(Stomp::Key $key, Str $sitename) returns Hash {
+our sub remove(Stomp::Key $key, Str $sitename) returns Hash {
     my $index = Stomp::Index::GetIndex($key);
     my $filename = $index{$sitename} // err("$sitename does not exist");
-    removeDataFile($filename);
+    remove-data-file($filename);
     Stomp::Index::RemoveFromIndex($key, $sitename);
     return { :$sitename };
 }
 
-our sub SetupData(Str :$auto) {
+our sub setup(Str :$auto) {
     header("Welcome to $*PROGRAM_NAME");
     msg('getting things ready...');
     xmkdir($Stomp::Config::RootDir);
@@ -95,26 +95,26 @@ our sub SetupData(Str :$auto) {
     True; # return True when auto is enabled to help tests
 }
 
-our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {
-    return GetData($key, $sitename)<password>;
+our sub password(Stomp::Key $key, Str $sitename) returns Str {
+    return get($key, $sitename)<password>;
 }
 
-sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {
+sub get-filename-from-index(Stomp::Key $key, Str $sitename) {
     my $index = Stomp::Index::GetIndex($key);
     return $index{$sitename} // err("cannot find $sitename");
 }
 
-sub writeDataFile(Str $filename, Str $data) {
+sub write-data-file(Str $filename, Str $data) {
     my $fh = xopen($Stomp::Config::DataDir ~ "/$filename");
     xwrite($fh, $data);
     xclose($fh);
     xchmod(0o600, $Stomp::Config::DataDir ~ "/$filename");
 }
 
-sub removeDataFile(Str $filename) {
+sub remove-data-file(Str $filename) {
     xunlink($Stomp::Config::DataDir ~ "/$filename");
 }
 
-sub readDataFile(Str $filename) {
+sub read-data-file(Str $filename) {
     return xslurp($Stomp::Config::DataDir ~ "/$filename");
 }

@@ -11,7 +11,7 @@ $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
 plan 1;
 
-Stomp::Data::SetupData(auto => 'OxychromaticBlowfishSwatDynamite');
+Stomp::Data::setup(auto => 'OxychromaticBlowfishSwatDynamite');
 
 ok $Stomp::Config::RootDir.IO.d, 'root dir exists';
 

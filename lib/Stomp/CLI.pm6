@@ -33,7 +33,7 @@ method add(Str @options) {
         if $interactive;
 
     my $key = Stomp::Key.smith();
-    my $data = Stomp::Data::AddData($key, $sitename, $username, $password);
+    my $data = Stomp::Data::add($key, $sitename, $username, $password);
 
     header($sitename);
     msg("added");
@@ -44,7 +44,7 @@ method edit(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.smith();
-    my $data = Stomp::Data::GetData($key, $sitename);
+    my $data = Stomp::Data::get($key, $sitename);
 
     for $data.kv -> $param, $value {
         next if $param eq <sitename>;
@@ -64,7 +64,7 @@ method edit(Str @options) {
         $data{$name} = $value;
     }
 
-    Stomp::Data::EditData($key, $sitename, $data);
+    Stomp::Data::edit($key, $sitename, $data);
 
     header($sitename);
     msg("updated");
@@ -78,7 +78,7 @@ method get(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.smith();
-    my $data = Stomp::Data::GetData($key, $sitename);
+    my $data = Stomp::Data::get($key, $sitename);
 
     header($sitename);
     for $data.kv -> $param, $value {
@@ -92,14 +92,14 @@ method remove(Str @options) {
     my $key = Stomp::Key.smith();
     my $sure = Stomp::Utils::ask-yes-or-no("delete $sitename?", :no);
     err("aborted!") if not $sure;
-    Stomp::Data::RemoveData($key, $sitename);
+    Stomp::Data::remove($key, $sitename);
     msg("removed $sitename");
 }
 
 method find(Str @options) {
     my $search = @options.shift;
     my $key = Stomp::Key.smith();
-    my @data = Stomp::Data::FindData($key, $search);
+    my @data = Stomp::Data::find($key, $search);
 
     for @data -> $site {
         my $s = $site<sitename>;
@@ -112,7 +112,7 @@ method find(Str @options) {
 
 method list(Str @options) {
     my $key = Stomp::Key.smith();
-    my @data = Stomp::Data::ListData($key);
+    my @data = Stomp::Data::list($key);
     for @data -> $site {
         my $s = $site<sitename>;
         print $site<sitename>;
@@ -126,7 +126,7 @@ method clip(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.smith();
-    my $password = Stomp::Data::PasswordData($key, $sitename);
+    my $password = Stomp::Data::password($key, $sitename);
     say $password;
 }
 
@@ -176,7 +176,7 @@ method admin(Str @options) {
 }
 
 method setup() {
-    Stomp::Data::SetupData();
+    Stomp::Data::setup();
 }
 
 method usage(Str $hint?) {
