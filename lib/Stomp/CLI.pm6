@@ -15,6 +15,7 @@ method command(Str $command, Str @options) {
         when <gen>          { self.generate(@options) }
         when <x> | <clip>   { self.clip(@options) }
         when <admin>        { self.admin(@options) }
+        when <obliterate>   { self.obliterate(@options) }
         default             { self.usage() }
     }
 }
@@ -173,6 +174,31 @@ method admin(Str @options) {
     self.usage("must specify command to send to server") if @options.elems < 1;
     my $command = @options.shift;
     Stomp::Daemon::Client.command($command);
+}
+
+method obliterate(Str @options) {
+    msg("you are about to delete *EVERYTHING*");
+    msg("there is no way to undo this");
+    msg("type 'BEWARE THE JABBERWOCK' to confirm");
+    my $confirm = prompt("Confirm: ");
+    if $confirm eq "BEWARE THE JABBERWOCK" {
+        use Shell::Command;
+        msg("orbital bombardment in progress...");
+        xchmod(0o700, $Stomp::Config::KeyDir);
+        xchmod(0o700, $Stomp::Config::Key);
+        rm_rf($Stomp::Config::RootDir);
+        if $Stomp::Config::Key.IO !~~ :e {
+            msg("all your data has been nuked from orbit");
+            msg("I hope you do not regret this decision");
+        }
+        else {
+            err("there still appears to still be some signs of life");
+            err("you have to manually clean up");
+        }
+    }
+    else {
+        err("orbital bombardment aborted!");
+    }
 }
 
 method setup() {
