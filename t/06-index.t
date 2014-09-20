@@ -13,7 +13,7 @@ $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
 my $key = Stomp::Key.new();
 
-$key.Unlock('OxychromaticBlowfishSwatDynamite');
+$key.unlock('OxychromaticBlowfishSwatDynamite');
 
 Stomp::Index::UpdateIndex($key, 'fakesite', 'NOT_A_REAL_FILE');
 my $index = Stomp::Index::GetIndex($key);

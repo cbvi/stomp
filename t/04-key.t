@@ -13,48 +13,48 @@ $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
 my $key = Stomp::Key.new();
 
-ok $key.Locked, 'key is locked';
-dies_ok { $key.Key() }, 'reading locked key dies';
+ok $key.locked, 'key is locked';
+dies_ok { $key.key() }, 'reading locked key dies';
 
-$key.Unlock('OxychromaticBlowfishSwatDynamite');
+$key.unlock('OxychromaticBlowfishSwatDynamite');
 
-nok $key.Locked, 'key is unlocked';
-lives_ok { $key.Key() }, 'reading unlocked key works';
+nok $key.locked, 'key is unlocked';
+lives_ok { $key.key() }, 'reading unlocked key works';
 
-is Stomp::Utils::base64-encode($key.Key()), $key.Base64Key(), 'base64 key';
+is Stomp::Utils::base64-encode($key.key()), $key.base64-key(), 'base64 key';
 
 my $data = "One, two! One, two! and through and through\nThe vorpal blade went snicker-snack!";
-my $enc = $key.Encrypt($data);
-is $key.Decrypt($enc), $data, 'got decrypted data back';
+my $enc = $key.encrypt($data);
+is $key.decrypt($enc), $data, 'got decrypted data back';
 
-$key.Lock();
-ok $key.Locked, 'key was locked';
-dies_ok { $key.Key() }, 'reading manually locked key dies';
+$key.lock();
+ok $key.locked, 'key was locked';
+dies_ok { $key.key() }, 'reading manually locked key dies';
 
-dies_ok { $key.Encrypt("oh noes") }, 'encrypting while key is locked dies';
-dies_ok { $key.Decrypt($enc) }, 'decrypting while key is locked dies';
+dies_ok { $key.encrypt("oh noes") }, 'encrypting while key is locked dies';
+dies_ok { $key.decrypt($enc) }, 'decrypting while key is locked dies';
 
-$key.Unlock('OxychromaticBlowfishSwatDynamite');
-my $original = $key.Key();
-my $originalbase64 = $key.Base64Key();
+$key.unlock('OxychromaticBlowfishSwatDynamite');
+my $original = $key.key();
+my $originalbase64 = $key.base64-key();
 
-$key.Rekey("New key!".encode);
+$key.rekey("New key!".encode);
 
-isnt $key.Key(), $original, 'rekey changed the key';
+isnt $key.key(), $original, 'rekey changed the key';
 
-is Stomp::Utils::base64-encode($key.Key()), $key.Base64Key(),
+is Stomp::Utils::base64-encode($key.key()), $key.base64-key(),
     'rekeying resets the base64 key';
 
 dies_ok { $key.Decrypt($enc) }, 'dies decrypting with wrong key';
 
-my $reenc = $key.Encrypt($data);
-is $key.Decrypt($reenc), $data, 'correct data with modified key';
+my $reenc = $key.encrypt($data);
+is $key.decrypt($reenc), $data, 'correct data with modified key';
 
-$key.Rekey($original);
-is $key.Decrypt($enc), $data, 'changed key back';
-is $key.Base64Key(), $originalbase64, 'base64 key matches original';
+$key.rekey($original);
+is $key.decrypt($enc), $data, 'changed key back';
+is $key.base64-key(), $originalbase64, 'base64 key matches original';
 
-$key.Finish($key);
+$key.finish($key);
 
 nok $key.defined, 'Finish destroyed the key';
 

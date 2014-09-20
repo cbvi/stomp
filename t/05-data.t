@@ -16,7 +16,7 @@ mkpath('t/testdir');
 mkpath('t/testdir/data');
 
 my $key = Stomp::Key.new;
-$key.Unlock('OxychromaticBlowfishSwatDynamite');
+$key.unlock('OxychromaticBlowfishSwatDynamite');
 
 {
  Stomp::Data::AddData($key, 'example.org', 'dave', 'letmein123');

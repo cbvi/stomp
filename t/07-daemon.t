@@ -51,8 +51,8 @@ STHelper::StartServer();
  my $reply = Stomp::Utils::do-request($req);
 
  my $key = Stomp::Key.new();
- $key.Unlock('OxychromaticBlowfishSwatDynamite');
- is $reply<key>, Stomp::Utils::base64-encode($key.Key()), 'key matches';
+ $key.unlock('OxychromaticBlowfishSwatDynamite');
+ is $reply<key>, Stomp::Utils::base64-encode($key.key()), 'key matches';
 }
 
 {

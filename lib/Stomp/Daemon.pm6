@@ -37,7 +37,7 @@ method stop-collaborate-and-listen() {
 
 method shutdown() {
     note "$*PROGRAM_NAME: stopping...";
-    $!Key.Finish($!Key);
+    $!Key.finish($!Key);
     $!Tap.close();
     # FIXME 'Illegal attempt to pop empty temporary root stack'
     #$!Promise.keep(1);

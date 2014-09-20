@@ -86,7 +86,7 @@ our sub is-setup() {
     return $Stomp::Config::RootDir.IO.d;
 }
 
-sub ask-password(Str $prompt = "Master password: ", Bool :$confirm?) {
+our sub ask-password(Str $prompt = "Master password: ", Bool :$confirm?) {
     my Str $p1 = "";
     my Str $p2 = "";
     loop {

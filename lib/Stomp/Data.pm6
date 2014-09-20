@@ -19,20 +19,20 @@ returns Hash {
         :$password;
     my Str $json = to-json(%data);
     my Str $filename = Stomp::Utils::sha256(Stomp::Utils::random(32));
-    writeDataFile($filename, $key.Encrypt($json));
+    writeDataFile($filename, $key.encrypt($json));
     Stomp::Index::UpdateIndex($key, $sitename, $filename);
     return { :$sitename, :$username, :$password };
 }
 
 our sub EditData(Stomp::Key $key, Str $sitename, %data) returns Hash {
     my $filename = getFilenameFromIndex($key, $sitename);
-    writeDataFile($filename, $key.Encrypt(to-json(%data)));
+    writeDataFile($filename, $key.encrypt(to-json(%data)));
     return %data;
 }
 
 our sub GetData(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
     my $filename = $fn // getFilenameFromIndex($key, $sitename);
-    my $data = from-json($key.Decrypt(readDataFile($filename)));
+    my $data = from-json($key.decrypt(readDataFile($filename)));
     return $data;
 }
 
@@ -79,15 +79,15 @@ our sub SetupData(Str :$auto) {
 
     my $fh = xopen($Stomp::Config::Key);
     my $skey = Stomp::Key.new();
-    $skey.Rekey($pw);
-    xwrite($fh, $skey.Encrypt($key));
+    $skey.rekey($pw);
+    xwrite($fh, $skey.encrypt($key));
     xclose($fh);
     xchmod(0o400, $Stomp::Config::Key);
     xchmod(0o500, $Stomp::Config::KeyDir);
 
     $fh = xopen($Stomp::Config::Index);
-    $skey.Rekey($key);
-    xwrite($fh, $skey.Encrypt('{ }'));
+    $skey.rekey($key);
+    xwrite($fh, $skey.encrypt('{ }'));
     xclose($fh);
 
     msg("all done, have fun!");

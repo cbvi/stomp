@@ -31,7 +31,7 @@ STHelper::StartServer();
 
 {
  my $key = Stomp::Key.new();
- $key.Unlock('OxychromaticBlowfishSwatDynamite');
+ $key.unlock('OxychromaticBlowfishSwatDynamite');
  my $data = Stomp::Data::GetData($key, 'example.com');
  is $data<username>, 'jwocky', 'data was added';
 }

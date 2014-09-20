@@ -32,7 +32,7 @@ method add(Str @options) {
     $password = Stomp::Utils::ask-password("password for $sitename: ")
         if $interactive;
 
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my $data = Stomp::Data::AddData($key, $sitename, $username, $password);
 
     header($sitename);
@@ -43,7 +43,7 @@ method add(Str @options) {
 method edit(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my $data = Stomp::Data::GetData($key, $sitename);
 
     for $data.kv -> $param, $value {
@@ -77,7 +77,7 @@ method edit(Str @options) {
 method get(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my $data = Stomp::Data::GetData($key, $sitename);
 
     header($sitename);
@@ -89,7 +89,7 @@ method get(Str @options) {
 method remove(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my $sure = Stomp::Utils::ask-yes-or-no("delete $sitename?", :no);
     err("aborted!") if not $sure;
     Stomp::Data::RemoveData($key, $sitename);
@@ -98,7 +98,7 @@ method remove(Str @options) {
 
 method find(Str @options) {
     my $search = @options.shift;
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my @data = Stomp::Data::FindData($key, $search);
 
     for @data -> $site {
@@ -111,7 +111,7 @@ method find(Str @options) {
 }
 
 method list(Str @options) {
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my @data = Stomp::Data::ListData($key);
     for @data -> $site {
         my $s = $site<sitename>;
@@ -125,7 +125,7 @@ method list(Str @options) {
 method clip(Str @options) {
     self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
-    my $key = Stomp::Key.Smith();
+    my $key = Stomp::Key.smith();
     my $password = Stomp::Data::PasswordData($key, $sitename);
     say $password;
 }

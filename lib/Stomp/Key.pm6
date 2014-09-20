@@ -4,64 +4,64 @@ use Stomp::Config;
 use Stomp::Utils;
 use Stomp::Daemon::Client;
 
-has Blob $!DecodedKey;
-has Str $!base64Key;
+has Blob $!decoded-key;
+has Str $!base64-decoded-key;
 
-has Bool $.Locked is rw = True;
+has Bool $.locked is rw = True;
 
-method Smith() returns Stomp::Key {
+method smith() returns Stomp::Key {
     my $key = Stomp::Key.new();
     my $dk = Stomp::Daemon::Client.Command('key');
-    $key.Rekey(Stomp::Utils::base64-decode($dk<key>));
+    $key.rekey(Stomp::Utils::base64-decode($dk<key>));
     return $key;
 }
 
-method Rekey(Blob $key) {
-    $!DecodedKey = $key;
-    $!base64Key = Str;
-    $.Locked = False;
+method rekey(Blob $key) {
+    $!decoded-key = $key;
+    $!base64-decoded-key = Str;
+    $.locked = False;
 }
 
-method Encrypt($data) returns Str {
-    return Stomp::Utils::encrypt(self.Key(), $data);
+method encrypt($data) returns Str {
+    return Stomp::Utils::encrypt(self.key(), $data);
 }
 
-method Decrypt(Str $data) {
-    return Stomp::Utils::decrypt(self.Key(), $data);
+method decrypt(Str $data) {
+    return Stomp::Utils::decrypt(self.key(), $data);
 }
 
-method Lock() {
-    undefine $!DecodedKey;
-    undefine $!base64Key;
-    $.Locked = True;
+method lock() {
+    undefine $!decoded-key;
+    undefine $!base64-decoded-key;
+    $.locked = True;
 }
 
-method Unlock(Str $password) {
-    my Str $enckey = readKey();
+method unlock(Str $password) {
+    my Str $enckey = read-key();
     my $key = $password.encode;
-    $!DecodedKey = Stomp::Utils::decrypt($key, $enckey);
-    $.Locked = False;
+    $!decoded-key = Stomp::Utils::decrypt($key, $enckey);
+    $.locked = False;
 } 
 
-method Key() returns Blob {
-    return $!DecodedKey // panic("Key object has been destroyed");
+method key() returns Blob {
+    return $!decoded-key // panic("Key object has been destroyed");
 }
 
-method Base64Key() returns Str {
-    return $!base64Key if $!base64Key;
-    $!base64Key = Stomp::Utils::base64-encode(self.Key());
-    return $!base64Key;
+method base64-key() returns Str {
+    return $!base64-decoded-key if $!base64-decoded-key;
+    $!base64-decoded-key = Stomp::Utils::base64-encode(self.key());
+    return $!base64-decoded-key;
 }
 
-method Finish(Stomp::Key $obj is rw) {
+method finish(Stomp::Key $obj is rw) {
     if $obj !~~ self {
         panic("object given to Finish() must be itself");
     }
-    undefine $!DecodedKey;
+    undefine $!decoded-key;
     undefine $obj;
 }
 
-sub readKey() {
+sub read-key() {
     return xslurp($Stomp::Config::Key);
 }
 

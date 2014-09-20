@@ -27,25 +27,25 @@ method !DoSomething(%request, $d) {
 
 method !Unlock(%request, Stomp::Key $key) {
     cmd('unlock');
-    $key.Unlock(%request<password>);
-    res('locked', $key.Locked);
+    $key.unlock(%request<password>);
+    res('locked', $key.locked);
     CATCH {
         res('error', 'password');
         return { error => 'password' }
     };
-    return { command => %request<command>, locked => $key.Locked };
+    return { command => %request<command>, locked => $key.locked };
 }
 
 method !Lock(%request, Stomp::Key $key) {
     cmd('lock');
-    $key.Lock();
-    res('locked', $key.Locked);
-    return { command => %request<command>, locked => $key.Locked };
+    $key.lock();
+    res('locked', $key.locked);
+    return { command => %request<command>, locked => $key.locked };
 }
 
 method !Key(%request, Stomp::Key $key) {
     cmd('key');
-    if $key.Locked {
+    if $key.locked {
         res('error', 'locked');
         return { error => 'locked' };
     }
@@ -53,7 +53,7 @@ method !Key(%request, Stomp::Key $key) {
 
     return {
         command => %request<command>,
-        key => $key.Base64Key()
+        key => $key.base64-key()
     };
 }
 
