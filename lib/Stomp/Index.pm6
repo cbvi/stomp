@@ -5,27 +5,27 @@ use Stomp::Utils;
 use Stomp::Key;
 use JSON::Tiny;
 
-our sub UpdateIndex(Stomp::Key $key, Str $sitename, Str $filename) {
-    my $index = from-json($key.decrypt(readIndex()));
+our sub update(Stomp::Key $key, Str $sitename, Str $filename) {
+    my $index = from-json($key.decrypt(read()));
     $index{$sitename} = $filename;
-    writeIndex($key.encrypt(to-json($index)));
+    write($key.encrypt(to-json($index)));
 }
 
-our sub GetIndex(Stomp::Key $key) {
-    return from-json($key.decrypt(readIndex()));
+our sub get(Stomp::Key $key) {
+    return from-json($key.decrypt(read()));
 }
 
-our sub RemoveFromIndex(Stomp::Key $key, Str $sitename) {
-    my $index = from-json($key.decrypt(readIndex()));
+our sub remove(Stomp::Key $key, Str $sitename) {
+    my $index = from-json($key.decrypt(read()));
     $index{$sitename} :delete;
-    writeIndex($key.encrypt(to-json($index)));
+    write($key.encrypt(to-json($index)));
 }
 
-sub readIndex {
+sub read {
     return xslurp($Stomp::Config::Index);
 }
 
-sub writeIndex(Str $encjson) {
+sub write(Str $encjson) {
     my $fh = xopen($Stomp::Config::Index);
     xwrite($fh, $encjson);
     xclose($fh);

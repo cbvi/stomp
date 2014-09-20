@@ -15,8 +15,8 @@ my $key = Stomp::Key.new();
 
 $key.unlock('OxychromaticBlowfishSwatDynamite');
 
-Stomp::Index::UpdateIndex($key, 'fakesite', 'NOT_A_REAL_FILE');
-my $index = Stomp::Index::GetIndex($key);
+Stomp::Index::update($key, 'fakesite', 'NOT_A_REAL_FILE');
+my $index = Stomp::Index::get($key);
 
 is $index<fakesite>, 'NOT_A_REAL_FILE', 'added and got index result';
 $index{'fakesite'} :delete;

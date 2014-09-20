@@ -8,7 +8,7 @@ use JSON::Tiny;
 
 our sub add(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
 returns Hash {
-    my $index = Stomp::Index::GetIndex($key);
+    my $index = Stomp::Index::get($key);
     if $index{$sitename} :exists {
         err("$sitename already exists");
     }
@@ -20,7 +20,7 @@ returns Hash {
     my Str $json = to-json(%data);
     my Str $filename = Stomp::Utils::sha256(Stomp::Utils::random(32));
     write-data-file($filename, $key.encrypt($json));
-    Stomp::Index::UpdateIndex($key, $sitename, $filename);
+    Stomp::Index::update($key, $sitename, $filename);
     return { :$sitename, :$username, :$password };
 }
 
@@ -37,7 +37,7 @@ our sub get(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
 }
 
 our sub find(Stomp::Key $key, Str $searchterm) returns Array {
-    my $index = Stomp::Index::GetIndex($key);
+    my $index = Stomp::Index::get($key);
     my @found;
     for $index.kv -> $sitename, $filename {
         if $sitename ~~ / $searchterm / {
@@ -48,7 +48,7 @@ our sub find(Stomp::Key $key, Str $searchterm) returns Array {
 }
 
 our sub list(Stomp::Key $key) returns Array {
-    my $index = Stomp::Index::GetIndex($key);
+    my $index = Stomp::Index::get($key);
     my @sites;
     for $index.kv -> $sitename, $filename {
         @sites.push(get($key, $sitename, $filename));
@@ -57,10 +57,10 @@ our sub list(Stomp::Key $key) returns Array {
 }
 
 our sub remove(Stomp::Key $key, Str $sitename) returns Hash {
-    my $index = Stomp::Index::GetIndex($key);
+    my $index = Stomp::Index::get($key);
     my $filename = $index{$sitename} // err("$sitename does not exist");
     remove-data-file($filename);
-    Stomp::Index::RemoveFromIndex($key, $sitename);
+    Stomp::Index::remove($key, $sitename);
     return { :$sitename };
 }
 
@@ -100,7 +100,7 @@ our sub password(Stomp::Key $key, Str $sitename) returns Str {
 }
 
 sub get-filename-from-index(Stomp::Key $key, Str $sitename) {
-    my $index = Stomp::Index::GetIndex($key);
+    my $index = Stomp::Index::get($key);
     return $index{$sitename} // err("cannot find $sitename");
 }
 
