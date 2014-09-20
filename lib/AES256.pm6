@@ -13,7 +13,7 @@ END {
 }
 
 sub cbc(Blob $key) {
-    return $ip5.invoke('Crypt::CBC', 'new', $key, 'Crypt::Rijndael');
+    return $ip5.invoke('Crypt::CBC', 'new', $key, 'Crypt::OpenSSL::AES');
 }
 
 method Encrypt(Blob $key, $data) returns Str {
