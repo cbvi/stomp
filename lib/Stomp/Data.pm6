@@ -91,6 +91,7 @@ our sub SetupData(Str :$auto) {
 
     msg("all done, have fun!");
     exit(0) if not $auto;
+    True; # return True when auto is enabled to help tests
 }
 
 our sub PasswordData(Stomp::Key $key, Str $sitename) returns Str {

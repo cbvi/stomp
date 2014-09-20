@@ -15,4 +15,4 @@ Stomp::Data::SetupData(auto => 'OxychromaticBlowfishSwatDynamite');
 
 ok $Stomp::Config::RootDir.IO.d, 'root dir exists';
 
-done();
+exit(0);
