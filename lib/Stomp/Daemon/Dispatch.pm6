@@ -54,7 +54,7 @@ method !Key(%request, Stomp::Key $key) {
 
     return {
         command => %request<command>,
-        key => Stomp::Utils::Base64Encode($key.Key())
+        key => $key.Base64Key()
     };
 }
 

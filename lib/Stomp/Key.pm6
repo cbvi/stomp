@@ -5,6 +5,7 @@ use Stomp::Utils;
 use Stomp::Daemon::Client;
 
 has Blob $!DecodedKey;
+has Str $!base64Key;
 
 has Bool $.Locked is rw = True;
 
@@ -17,6 +18,7 @@ method Smith() returns Stomp::Key {
 
 method Rekey(Blob $key) {
     $!DecodedKey = $key;
+    $!base64Key = Str;
     $.Locked = False;
 }
 
@@ -29,8 +31,8 @@ method Decrypt(Str $data) {
 }
 
 method Lock() {
-    $!DecodedKey = Stomp::Utils::Random(8192);
     undefine $!DecodedKey;
+    undefine $!base64Key;
     $.Locked = True;
 }
 
@@ -45,17 +47,22 @@ method Key() returns Blob {
     return $!DecodedKey // panic("Key object has been destroyed");
 }
 
+method Base64Key() returns Str {
+    return $!base64Key if $!base64Key;
+    $!base64Key = Stomp::Utils::Base64Encode(self.Key());
+    return $!base64Key;
+}
+
 method Finish(Stomp::Key $obj is rw) {
     if $obj !~~ self {
         panic("object given to Finish() must be itself");
     }
-    $!DecodedKey = Stomp::Utils::Random(8192);
     undefine $!DecodedKey;
     undefine $obj;
 }
 
 sub readKey() {
     return xSlurp($Stomp::Config::Key);
-} 
+}
 
 # vim: ft=perl6
