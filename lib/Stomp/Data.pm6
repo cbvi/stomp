@@ -75,7 +75,7 @@ our sub setup(Str :$auto) {
 
     my $pw = $auto // Stomp::Utils::ask-password(:confirm);
     $pw .= encode;
-    my Buf $key = Stomp::Utils::random(1024 * 5);
+    my Buf $key = Stomp::Utils::random(1024 * 8);
 
     my $fh = xopen($Stomp::Config::Key);
     my $skey = Stomp::Key.new();
