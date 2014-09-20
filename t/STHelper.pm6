@@ -1,7 +1,7 @@
 module STHelper;
 
 our sub StartServer {
-    if "t/server.pid" {
+    if "t/server.pid".IO.e {
         StopServer(:nowait);
     }
     shell("$*EXECUTABLE t/testserver.pl6 &");
