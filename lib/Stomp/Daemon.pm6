@@ -7,19 +7,19 @@ use Stomp::Key;
 my Str $localhost = $Stomp::Config::Host;
 my Int $localport = $Stomp::Config::Port;
 
-has $!Socket;
-has Tap $!Tap;
+has $!socket;
+has Tap $!tap;
 
-has Stomp::Key $.Key;
+has Stomp::Key $.key;
 
-has Bool $!Running = True;
+has Bool $!running = True;
 
 method stop-collaborate-and-listen() {
     note "$*PROGRAM_NAME: starting...";
-    $!Key = Stomp::Key.new();
+    $!key = Stomp::Key.new();
 
-    $!Socket = IO::Socket::Async.listen($localhost, $localport);
-    $!Tap = $!Socket.tap( -> $connection {
+    $!socket = IO::Socket::Async.listen($localhost, $localport);
+    $!tap = $!socket.tap( -> $connection {
         $connection.chars_supply.tap( -> $message {
             my $response = Stomp::Daemon::Dispatch.Command($message, self);
             await $connection.send($response);
@@ -28,7 +28,7 @@ method stop-collaborate-and-listen() {
         Thread.yield();
     });
     note "$*PROGRAM_NAME: started";
-    while ($!Running) {
+    while ($!running) {
         Thread.yield();
         sleep(1);
     }
@@ -37,9 +37,9 @@ method stop-collaborate-and-listen() {
 
 method shutdown() {
     note "$*PROGRAM_NAME: stopping...";
-    $!Key.finish($!Key);
-    $!Tap.close();
+    $!key.finish($!key);
+    $!tap.close();
     # FIXME 'Illegal attempt to pop empty temporary root stack'
     #$!Promise.keep(1);
-    $!Running = False;
+    $!running = False;
 }

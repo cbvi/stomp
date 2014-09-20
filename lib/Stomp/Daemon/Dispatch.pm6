@@ -11,16 +11,16 @@ method Command(Str $request, $daemon) returns Str {
 method !DoSomething(%request, $d) {
     given %request<command> {
         when <unlock> {
-            self!Unlock(%request, $d.Key);
+            self!Unlock(%request, $d.key);
         }
         when <lock> {
-            self!Lock(%request, $d.Key);
+            self!Lock(%request, $d.key);
         }
         when <shutdown> {
             self!Shutdown(%request, $d);
         }
         when <key> {
-            self!Key(%request, $d.Key);
+            self!Key(%request, $d.key);
         }
     }
 }
