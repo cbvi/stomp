@@ -28,17 +28,8 @@ method Decrypt(Str $key, Str $data) {
     return $dec;
 }
 
-method RandomBytes(Int $len) {
-    my Str $sub_randombytes = '
-        sub randombytes {
-            my $len = shift;
-            return encode_base64( Crypt::CBC->random_bytes($len) );
-        }
-
-1;';
-
-    $ip5.run($sub_randombytes);
-    return $ip5.call('main::randombytes', $len);
+method RandomBytes(Int $len) returns Buf {
+    return $ip5.invoke('Crypt::CBC', 'random_bytes', $len);
 }
 
 method sha256sum($data) {
