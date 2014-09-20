@@ -6,14 +6,21 @@ use JSON::Tiny;
 module Stomp::Utils;
 
 our sub Encrypt(Str $key, Str $data) returns Str {
-    return AES256.Encrypt($key, $data);
+    my $hash = AES256.sha256sum($data);
+    my $enc = AES256.Encrypt($key, $data);
+    say $hash;
+    return "$hash\n$enc";
 }
 
 our sub Decrypt(Str $key, Str $data) returns Str {
-    return AES256.Decrypt($key, $data);
-    CATCH {
-        err("Decryption failed, check your password");
+    my @lines = $data.lines;
+    panic("data format is invalid") if @lines.elems != 2;
+    my ($hash, $enc) = @lines;
+    my $dec = AES256.Decrypt($key, $enc);
+    if $hash ne AES256.sha256sum($dec) {
+        err("Decryption failed");
     }
+    return $dec;
 }
 
 our sub Random(Int $length) {
