@@ -8,7 +8,6 @@ module Stomp::Utils;
 our sub Encrypt(Str $key, Str $data) returns Str {
     my $hash = AES256.sha256sum($data);
     my $enc = AES256.Encrypt($key, $data);
-    say $hash;
     return "$hash\n$enc";
 }
 
