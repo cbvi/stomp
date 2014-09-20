@@ -1,7 +1,7 @@
 use Test;
 use AES256;
 
-my $key = "Jabberwocky";
+my $key = "Jabberwocky".encode;
 my $data = "'Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe;\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.";
 
 my $enc = AES256.Encrypt($key, $data);

@@ -12,17 +12,17 @@ END {
     $ip5.DESTROY;
 }
 
-sub cbc(Str $key) {
+sub cbc(Blob $key) {
     return $ip5.invoke('Crypt::CBC', 'new', $key, 'Crypt::Rijndael');
 }
 
-method Encrypt(Str $key, Str $data) returns Str {
+method Encrypt(Blob $key, $data) returns Str {
     my $CBC = cbc($key);
     my $enc = $CBC.encrypt_hex($data);
     return $enc;
 }
 
-method Decrypt(Str $key, Str $data) {
+method Decrypt(Blob $key, Str $data) {
     my $CBC = cbc($key);
     my $dec = $CBC.decrypt_hex($data);
     return $dec;
@@ -32,6 +32,6 @@ method RandomBytes(Int $len) returns Buf {
     return $ip5.invoke('Crypt::CBC', 'random_bytes', $len);
 }
 
-method sha256sum($data) {
+method sha256sum($data) returns Str {
     return $ip5.call('Digest::SHA::sha256_hex', $data);
 }

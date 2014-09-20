@@ -1,6 +1,7 @@
 use v6;
 use Test;
 use Stomp::Key;
+use MIME::Base64;
 
 plan 14;
 
@@ -34,7 +35,7 @@ dies_ok { $key.Decrypt($enc) }, 'decrypting while key is locked dies';
 $key.Unlock('OxychromaticBlowfishSwatDynamite');
 my $original = $key.Key();
 
-$key.Rekey("New key!");
+$key.Rekey("New key!".encode);
 
 isnt $key.Key(), $original, 'rekey changed the key';
 
@@ -43,7 +44,7 @@ dies_ok { $key.Decrypt($enc) }, 'dies decrypting with wrong key';
 my $reenc = $key.Encrypt($data);
 is $key.Decrypt($reenc), $data, 'correct data with modified key';
 
-$key.Rekey($original);
+$key.Rekey(MIME::Base64.decode($original));
 is $key.Decrypt($enc), $data, 'changed key back';
 
 $key.Finish($key);
