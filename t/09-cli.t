@@ -17,9 +17,9 @@ STHelper::StartServer();
 
 {
  # cheat to get the key unlocked so we can test without entering a password
- my $req = Stomp::Utils::PrepareRequest("unlock",
+ my $req = Stomp::Utils::prepare-request("unlock",
     password => 'OxychromaticBlowfishSwatDynamite');
- Stomp::Utils::DoRequest($req);
+ Stomp::Utils::do-request($req);
  sleep(2);
 }
 

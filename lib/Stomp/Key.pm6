@@ -12,7 +12,7 @@ has Bool $.Locked is rw = True;
 method Smith() returns Stomp::Key {
     my $key = Stomp::Key.new();
     my $dk = Stomp::Daemon::Client.Command('key');
-    $key.Rekey(Stomp::Utils::Base64Decode($dk<key>));
+    $key.Rekey(Stomp::Utils::base64-decode($dk<key>));
     return $key;
 }
 
@@ -23,11 +23,11 @@ method Rekey(Blob $key) {
 }
 
 method Encrypt($data) returns Str {
-    return Stomp::Utils::Encrypt(self.Key(), $data);
+    return Stomp::Utils::encrypt(self.Key(), $data);
 }
 
 method Decrypt(Str $data) {
-    return Stomp::Utils::Decrypt(self.Key(), $data);
+    return Stomp::Utils::decrypt(self.Key(), $data);
 }
 
 method Lock() {
@@ -39,7 +39,7 @@ method Lock() {
 method Unlock(Str $password) {
     my Str $enckey = readKey();
     my $key = $password.encode;
-    $!DecodedKey = Stomp::Utils::Decrypt($key, $enckey);
+    $!DecodedKey = Stomp::Utils::decrypt($key, $enckey);
     $.Locked = False;
 } 
 
@@ -49,7 +49,7 @@ method Key() returns Blob {
 
 method Base64Key() returns Str {
     return $!base64Key if $!base64Key;
-    $!base64Key = Stomp::Utils::Base64Encode(self.Key());
+    $!base64Key = Stomp::Utils::base64-encode(self.Key());
     return $!base64Key;
 }
 
@@ -62,7 +62,7 @@ method Finish(Stomp::Key $obj is rw) {
 }
 
 sub readKey() {
-    return xSlurp($Stomp::Config::Key);
+    return xslurp($Stomp::Config::Key);
 }
 
 # vim: ft=perl6

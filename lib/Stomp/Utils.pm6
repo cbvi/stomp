@@ -5,13 +5,13 @@ use JSON::Tiny;
 
 module Stomp::Utils;
 
-our sub Encrypt(Blob $key, $data) returns Str {
+our sub encrypt(Blob $key, $data) returns Str {
     my $hash = Stomp::Crypt.sha256sum($data);
     my $enc = Stomp::Crypt.Encrypt($key, $data);
     return "$hash\n$enc";
 }
 
-our sub Decrypt(Blob $key, Str $data) {
+our sub decrypt(Blob $key, Str $data) {
     my @lines = $data.lines;
     panic("data format is invalid") if @lines.elems != 2;
     my ($hash, $enc) = @lines;
@@ -22,30 +22,30 @@ our sub Decrypt(Blob $key, Str $data) {
     return $dec;
 }
 
-our sub Random(Int $length) returns Blob {
+our sub random(Int $length) returns Blob {
     return Stomp::Crypt.RandomBytes($length);
 }
 
-our sub Sha256($data) {
+our sub sha256($data) {
     return Stomp::Crypt.sha256sum($data);
 }
 
-our sub Base64Encode(Blob $data) {
+our sub base64-encode(Blob $data) {
     return Stomp::Crypt.encode_base64($data);
 }
 
-our sub Base64Decode(Str $base64) {
+our sub base64-decode(Str $base64) {
     return Stomp::Crypt.decode_base64($base64);
 }
 
-our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
+our sub generate-password(Int $len, Bool :$special?) returns Str {
     my $achars = / [ <[a..z]> | <[A..Z]> | <[0..9]> ] /;
     my $sym = !$special ?? $achars !! / [<$achars>|'~'|'`'|'!'|'@'|'#'|'$'|'%'|'^'|'&'|'*'|'('|')'|'-'|'_'|'+'|'='|'<'|'>'|','|'.'|'?'|'/'|':'|';'] /;
 
     my Str $gen = '';
 
     while ($gen.chars < $len) {
-        my Blob $bin = Random(1);
+        my Blob $bin = random(1);
         # decode as utf8 and ignore any malformed utf8 exceptions
         try {
             my $s = $bin.decode('utf8');
@@ -55,7 +55,7 @@ our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
     return $gen;
 }
 
-our sub DoRequest(Str $data, Bool :$noreply?) {
+our sub do-request(Str $data, Bool :$noreply?) {
     my $sock;
     try {
         $sock = IO::Socket::INET.new( host => $Stomp::Config::Host,
@@ -74,7 +74,7 @@ our sub DoRequest(Str $data, Bool :$noreply?) {
     return !$noreply ?? from-json($response) !! from-json('{ }');
 }
 
-our sub PrepareRequest(Str $command, *%params) {
+our sub prepare-request(Str $command, *%params) {
     my %r = :$command;
     for %params.kv -> $name, $value {
         %r{$name} = $value;
@@ -82,11 +82,11 @@ our sub PrepareRequest(Str $command, *%params) {
     return to-json(%r);
 }
 
-our sub IsSetup() {
+our sub is-setup() {
     return $Stomp::Config::RootDir.IO.d;
 }
 
-sub AskPassword(Str $prompt = "Master password: ", Bool :$confirm?) is export {
+sub ask-password(Str $prompt = "Master password: ", Bool :$confirm?) {
     my Str $p1 = "";
     my Str $p2 = "";
     loop {
@@ -97,41 +97,41 @@ sub AskPassword(Str $prompt = "Master password: ", Bool :$confirm?) is export {
     }
 }
 
-sub xMkdir(Str $dir) is export {
+sub xmkdir(Str $dir) is export {
     mkdir($dir);
     CATCH { panic("could not create directory $dir"); }
 }
 
-sub xChmod(Int $mode, Str $file) is export {
+sub xchmod(Int $mode, Str $file) is export {
     chmod($mode, $file);
     CATCH { panic("could not set file permissions on $file"); }
 }
 
-sub xOpen(Str $file) returns IO::Handle is export {
+sub xopen(Str $file) returns IO::Handle is export {
     return open($file, :w);
     CATCH { panic("could not open $file"); }
 }
 
-sub xWrite(IO::Handle $fh, Str $text) is export {
+sub xwrite(IO::Handle $fh, Str $text) is export {
     $fh.print($text);
     CATCH { panic("could not write to {$fh.path}"); }
 }
 
-sub xClose(IO::Handle $fh) is export {
+sub xclose(IO::Handle $fh) is export {
     $fh.close();
 }
 
-sub xSlurp(Str $file) is export {
+sub xslurp(Str $file) is export {
     return slurp($file); 
     CATCH { panic("could not slurp $file"); }
 }
 
-sub xUnlink(Str $file) is export {
+sub xunlink(Str $file) is export {
     unlink($file);
     CATCH { panic("could not delete $file"); }
 }
 
-our sub AskYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
+our sub ask-yes-or-no(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
     panic("must specify a default") if not $yes and not $no;
     panic("both yes and no cannot be the default") if $yes and $no;
     my $default = $yes ?? "Y" !! "N";
@@ -142,7 +142,7 @@ our sub AskYesOrNo(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
     $input .= substr(0, 1);
     if $input ne any('Y', 'N') {
         msg("answer (Y)es or (N)o");
-        return AskYesOrNo($question, :$yes, :$no);
+        return ask-yes-or-no($question, :$yes, :$no);
     }
     return False if $input eq 'N';
     return True if $input eq 'Y';

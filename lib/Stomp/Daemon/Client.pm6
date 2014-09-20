@@ -17,8 +17,8 @@ method Dispatch(Str $command) {
 }
 
 method Lock() {
-    my $req = Stomp::Utils::PrepareRequest("lock");
-    my $res = Stomp::Utils::DoRequest($req);
+    my $req = Stomp::Utils::prepare-request("lock");
+    my $res = Stomp::Utils::do-request($req);
 
     if $res<locked> {
         msg("Locked!");
@@ -27,9 +27,9 @@ method Lock() {
 }
 
 method Unlock() {
-    my $req = Stomp::Utils::PrepareRequest("unlock",
-        password => AskPassword());
-    my $res = Stomp::Utils::DoRequest($req);
+    my $req = Stomp::Utils::prepare-request("unlock",
+        password => Stomp::Utils::ask-password());
+    my $res = Stomp::Utils::do-request($req);
 
     if $res<locked> :exists && not $res<locked> {
         msg("Unlocked!");
@@ -41,8 +41,8 @@ method Unlock() {
 }
 
 method Key() {
-    my $req = Stomp::Utils::PrepareRequest("key");
-    my $result = Stomp::Utils::DoRequest($req);
+    my $req = Stomp::Utils::prepare-request("key");
+    my $result = Stomp::Utils::do-request($req);
     if $result<error> :exists && $result<error> eq <locked> {
         self.Unlock();
         return self.Key();
@@ -51,9 +51,9 @@ method Key() {
 }
 
 method Shutdown() {
-    my $req = Stomp::Utils::PrepareRequest("shutdown");
+    my $req = Stomp::Utils::prepare-request("shutdown");
     msg("server sent shutdown command");
-    my $result = Stomp::Utils::DoRequest($req, :noreply);
+    my $result = Stomp::Utils::do-request($req, :noreply);
     if $result {
         panic("received response from server after shutdown");
     }

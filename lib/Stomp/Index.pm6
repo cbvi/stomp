@@ -22,11 +22,11 @@ our sub RemoveFromIndex(Stomp::Key $key, Str $sitename) {
 }
 
 sub readIndex {
-    return xSlurp($Stomp::Config::Index);
+    return xslurp($Stomp::Config::Index);
 }
 
 sub writeIndex(Str $encjson) {
-    my $fh = xOpen($Stomp::Config::Index);
-    xWrite($fh, $encjson);
-    xClose($fh);
+    my $fh = xopen($Stomp::Config::Index);
+    xwrite($fh, $encjson);
+    xclose($fh);
 }

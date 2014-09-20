@@ -29,7 +29,8 @@ method Add(Str @options) {
     my $sitename = @options.shift;
     my $username = @options.shift;
     my Str $password;
-    $password = AskPassword("password for $sitename: ") if $interactive;
+    $password = Stomp::Utils::ask-password("password for $sitename: ")
+        if $interactive;
 
     my $key = Stomp::Key.Smith();
     my $data = Stomp::Data::AddData($key, $sitename, $username, $password);
@@ -52,7 +53,7 @@ method Edit(Str @options) {
         $data{$param} = $newval;
     }
 
-    while (Stomp::Utils::AskYesOrNo("add a new field?", :no)) {
+    while (Stomp::Utils::ask-yes-or-no("add a new field?", :no)) {
         my $name = prompt("new field: ");
         next if $name eq "";
         if $data{$name} :exists {
@@ -89,7 +90,7 @@ method Remove(Str @options) {
     self.Usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.Smith();
-    my $sure = Stomp::Utils::AskYesOrNo("delete $sitename?", :no);
+    my $sure = Stomp::Utils::ask-yes-or-no("delete $sitename?", :no);
     err("aborted!") if not $sure;
     Stomp::Data::RemoveData($key, $sitename);
     msg("removed $sitename");
@@ -165,7 +166,7 @@ method Generate(Str @options) {
 
     my Bool $special = $set eq 'a' ?? False !! True;
     my $length = $len.Int;
-    say Stomp::Utils::GeneratePassword($length, :$special);
+    say Stomp::Utils::generate-password($length, :$special);
 }
 
 method Admin(Str @options) {

@@ -18,9 +18,9 @@ STHelper::StartServer();
 
 # Client unlock requires typing a password
 sub test_unlock {
-    my $req = Stomp::Utils::PrepareRequest("unlock",
+    my $req = Stomp::Utils::prepare-request("unlock",
         password => 'OxychromaticBlowfishSwatDynamite');
-    Stomp::Utils::DoRequest($req);
+    Stomp::Utils::do-request($req);
 }
 
 {
@@ -35,7 +35,7 @@ sub test_unlock {
  ok $cli<key>, 'return key';
  my $key = Stomp::Key.new();
  $key.Unlock('OxychromaticBlowfishSwatDynamite');
- is $cli<key>, Stomp::Utils::Base64Encode($key.Key()), 'key matches';
+ is $cli<key>, Stomp::Utils::base64-encode($key.Key()), 'key matches';
 }
 
 {

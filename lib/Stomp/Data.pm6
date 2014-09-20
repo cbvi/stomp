@@ -12,13 +12,13 @@ returns Hash {
     if $index{$sitename} :exists {
         err("$sitename already exists");
     }
-    my Str $password = $pw // Stomp::Utils::GeneratePassword(16);
+    my Str $password = $pw // Stomp::Utils::generate-password(16);
     my Str %data =
         :$sitename,
         :$username,
         :$password;
     my Str $json = to-json(%data);
-    my Str $filename = Stomp::Utils::Sha256(Stomp::Utils::Random(32));
+    my Str $filename = Stomp::Utils::sha256(Stomp::Utils::random(32));
     writeDataFile($filename, $key.Encrypt($json));
     Stomp::Index::UpdateIndex($key, $sitename, $filename);
     return { :$sitename, :$username, :$password };
@@ -67,28 +67,28 @@ our sub RemoveData(Stomp::Key $key, Str $sitename) returns Hash {
 our sub SetupData(Str :$auto) {
     header("Welcome to $*PROGRAM_NAME");
     msg('getting things ready...');
-    xMkdir($Stomp::Config::RootDir);
-    xChmod(0o700, $Stomp::Config::RootDir);
-    xMkdir($Stomp::Config::KeyDir);
-    xMkdir($Stomp::Config::DataDir);
+    xmkdir($Stomp::Config::RootDir);
+    xchmod(0o700, $Stomp::Config::RootDir);
+    xmkdir($Stomp::Config::KeyDir);
+    xmkdir($Stomp::Config::DataDir);
     msg("let's begin");
 
-    my $pw = $auto // AskPassword(:confirm);
+    my $pw = $auto // Stomp::Utils::ask-password(:confirm);
     $pw .= encode;
-    my Buf $key = Stomp::Utils::Random(1024 * 5);
+    my Buf $key = Stomp::Utils::random(1024 * 5);
 
-    my $fh = xOpen($Stomp::Config::Key);
+    my $fh = xopen($Stomp::Config::Key);
     my $skey = Stomp::Key.new();
     $skey.Rekey($pw);
-    xWrite($fh, $skey.Encrypt($key));
-    xClose($fh);
-    xChmod(0o400, $Stomp::Config::Key);
-    xChmod(0o500, $Stomp::Config::KeyDir);
+    xwrite($fh, $skey.Encrypt($key));
+    xclose($fh);
+    xchmod(0o400, $Stomp::Config::Key);
+    xchmod(0o500, $Stomp::Config::KeyDir);
 
-    $fh = xOpen($Stomp::Config::Index);
+    $fh = xopen($Stomp::Config::Index);
     $skey.Rekey($key);
-    xWrite($fh, $skey.Encrypt('{ }'));
-    xClose($fh);
+    xwrite($fh, $skey.Encrypt('{ }'));
+    xclose($fh);
 
     msg("all done, have fun!");
     exit(0) if not $auto;
@@ -105,16 +105,16 @@ sub getFilenameFromIndex(Stomp::Key $key, Str $sitename) {
 }
 
 sub writeDataFile(Str $filename, Str $data) {
-    my $fh = xOpen($Stomp::Config::DataDir ~ "/$filename");
-    xWrite($fh, $data);
-    xClose($fh);
-    xChmod(0o600, $Stomp::Config::DataDir ~ "/$filename");
+    my $fh = xopen($Stomp::Config::DataDir ~ "/$filename");
+    xwrite($fh, $data);
+    xclose($fh);
+    xchmod(0o600, $Stomp::Config::DataDir ~ "/$filename");
 }
 
 sub removeDataFile(Str $filename) {
-    xUnlink($Stomp::Config::DataDir ~ "/$filename");
+    xunlink($Stomp::Config::DataDir ~ "/$filename");
 }
 
 sub readDataFile(Str $filename) {
-    return xSlurp($Stomp::Config::DataDir ~ "/$filename");
+    return xslurp($Stomp::Config::DataDir ~ "/$filename");
 }
