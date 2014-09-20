@@ -1,7 +1,6 @@
 class Stomp::Daemon::Dispatch;
 
 use JSON::Tiny;
-use Stomp::Utils;
 use Stomp::Key;
 
 method Command(Str $request, $daemon) returns Str {
