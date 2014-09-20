@@ -1,0 +1,16 @@
+use v6;
+use Stomp::Daemon;
+
+$Stomp::Config::RootDir = 't/testdir';
+$Stomp::Config::KeyDir = 't/testdir/keys';
+$Stomp::Config::DataDir = 't/testdir/data';
+$Stomp::Config::Index = 't/testdir/index';
+$Stomp::Config::Key = 't/testdir/keys/stompkey';
+
+my $d = Stomp::Daemon.new();
+
+spurt("t/server.pid", $*PID);
+
+$d.StopCollaborateAndListen();
+
+# vim: ft=perl6
