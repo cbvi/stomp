@@ -4,23 +4,23 @@ use Stomp::Daemon::Client;
 use Stomp::Data;
 use Stomp::Utils;
 
-method Command(Str $command, Str @options) {
+method command(Str $command, Str @options) {
     given $command {
-        when <add>          { self.Add(@options) }
-        when <get>          { self.Get(@options) }
-        when <remove>       { self.Remove(@options) }
-        when <find>         { self.Find(@options) }
-        when <edit>         { self.Edit(@options) }
-        when <list>         { self.List(@options) }
-        when <gen>          { self.Generate(@options) }
-        when <x> | <clip>   { self.Clip(@options) }
-        when <admin>        { self.Admin(@options) }
-        default             { self.Usage() }
+        when <add>          { self.add(@options) }
+        when <get>          { self.get(@options) }
+        when <remove>       { self.remove(@options) }
+        when <find>         { self.find(@options) }
+        when <edit>         { self.edit(@options) }
+        when <list>         { self.list(@options) }
+        when <gen>          { self.generate(@options) }
+        when <x> | <clip>   { self.clip(@options) }
+        when <admin>        { self.admin(@options) }
+        default             { self.usage() }
     }
 }
 
-method Add(Str @options) {
-    self.Usage("must specify sitename and username") if @options.elems < 2;
+method add(Str @options) {
+    self.usage("must specify sitename and username") if @options.elems < 2;
     my Bool $interactive = False;
     if @options[0] eq '-i' {
         $interactive = True;
@@ -40,8 +40,8 @@ method Add(Str @options) {
     say $data<password> if not $interactive;
 }
 
-method Edit(Str @options) {
-    self.Usage("must specify sitename") if @options.elems < 1;
+method edit(Str @options) {
+    self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.Smith();
     my $data = Stomp::Data::GetData($key, $sitename);
@@ -74,8 +74,8 @@ method Edit(Str @options) {
     }
 }
 
-method Get(Str @options) {
-    self.Usage("must specify sitename") if @options.elems < 1;
+method get(Str @options) {
+    self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.Smith();
     my $data = Stomp::Data::GetData($key, $sitename);
@@ -86,8 +86,8 @@ method Get(Str @options) {
     }
 }
 
-method Remove(Str @options) {
-    self.Usage("must specify sitename") if @options.elems < 1;
+method remove(Str @options) {
+    self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.Smith();
     my $sure = Stomp::Utils::ask-yes-or-no("delete $sitename?", :no);
@@ -96,7 +96,7 @@ method Remove(Str @options) {
     msg("removed $sitename");
 }
 
-method Find(Str @options) {
+method find(Str @options) {
     my $search = @options.shift;
     my $key = Stomp::Key.Smith();
     my @data = Stomp::Data::FindData($key, $search);
@@ -110,7 +110,7 @@ method Find(Str @options) {
     }
 }
 
-method List(Str @options) {
+method list(Str @options) {
     my $key = Stomp::Key.Smith();
     my @data = Stomp::Data::ListData($key);
     for @data -> $site {
@@ -122,15 +122,15 @@ method List(Str @options) {
     }
 }
 
-method Clip(Str @options) {
-    self.Usage("must specify sitename") if @options.elems < 1;
+method clip(Str @options) {
+    self.usage("must specify sitename") if @options.elems < 1;
     my $sitename = @options.shift;
     my $key = Stomp::Key.Smith();
     my $password = Stomp::Data::PasswordData($key, $sitename);
     say $password;
 }
 
-method Generate(Str @options) {
+method generate(Str @options) {
     my $len = 16;
     my $set = 'a';
 
@@ -146,21 +146,21 @@ method Generate(Str @options) {
             $o1 = "set";
         }
         else {
-            self.Usage("didn't understand first parameter: {@options[0]}");
+            self.usage("didn't understand first parameter: {@options[0]}");
         }
     }
 
     if @options.elems > 1 {
         if @options[1] ~~ / ^ <[as]> $ / {
-            self.Usage("can't specify set twice") if $o1 eq "set";
+            self.usage("can't specify set twice") if $o1 eq "set";
             $set = @options[1];
         }
         elsif @options[1] ~~ / ^ <digit>* $ / {
-            self.Usage("can't specify length twice") if $o1 eq "len";
+            self.usage("can't specify length twice") if $o1 eq "len";
             $len = @options[1];
         }
         else {
-            self.Usage("didn't understand second parameter: {@options[1]}");
+            self.usage("didn't understand second parameter: {@options[1]}");
         }
     }
 
@@ -169,17 +169,17 @@ method Generate(Str @options) {
     say Stomp::Utils::generate-password($length, :$special);
 }
 
-method Admin(Str @options) {
-    self.Usage("must specify command to send to server") if @options.elems < 1;
+method admin(Str @options) {
+    self.usage("must specify command to send to server") if @options.elems < 1;
     my $command = @options.shift;
     Stomp::Daemon::Client.Command($command);
 }
 
-method Setup() {
+method setup() {
     Stomp::Data::SetupData();
 }
 
-method Usage(Str $hint?) {
+method usage(Str $hint?) {
     msg($hint) if $hint;
     say "\t$*PROGRAM_NAME add [-i] sitename username";
     say "\t$*PROGRAM_NAME get sitename";

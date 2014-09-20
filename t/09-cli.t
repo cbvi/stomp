@@ -26,7 +26,7 @@ STHelper::StartServer();
 {
  my $command = 'add';
  my Str @options = <example.com jwocky>;
- Stomp::CLI.Command($command, @options);
+ Stomp::CLI.command($command, @options);
 }
 
 {

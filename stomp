@@ -4,15 +4,15 @@ use lib 'lib';
 use Stomp::CLI;
 use Stomp::Utils;
 
-if not Stomp::Utils::IsSetup() {
+if not Stomp::Utils::is-setup() {
     Stomp::CLI.Setup();
 }
 
-Stomp::CLI.Usage() if not @*ARGS[0];
+Stomp::CLI.usage() if not @*ARGS[0];
 
 my Str $command = @*ARGS.shift;
 my Str @options = @*ARGS;
 
-Stomp::CLI.Command($command, @options);
+Stomp::CLI.command($command, @options);
 
 # vim: ft=perl6
