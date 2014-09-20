@@ -35,3 +35,15 @@ method RandomBytes(Int $len) returns Buf {
 method sha256sum($data) returns Str {
     return $ip5.call('Digest::SHA::sha256_hex', $data);
 }
+
+method encode_base64(Blob $data) returns Str {
+    return $ip5.call('MIME::Base64::encode_base64', $data);
+}
+
+method decode_base64(Str $base64) returns Blob {
+    my $decoded = $ip5.call('MIME::Base64::decode_base64', $base64);
+    if $decoded !~~ Blob {
+        $decoded .= encode;
+    }
+    return $decoded;
+}

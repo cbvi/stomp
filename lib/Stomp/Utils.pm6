@@ -2,12 +2,11 @@ use AES256;
 use Stomp::Config;
 use Stomp::Exception;
 use JSON::Tiny;
-use MIME::Base64;
 
 module Stomp::Utils;
 
 our sub Encrypt(Str $base64key, $data) returns Str {
-    my $key = MIME::Base64.decode($base64key);
+    my Blob $key = Base64Decode($base64key);
     my $hash = AES256.sha256sum($data);
     my $enc = AES256.Encrypt($key, $data);
     return "$hash\n$enc";
@@ -17,7 +16,7 @@ our sub Decrypt(Str $base64key, Str $data) {
     my @lines = $data.lines;
     panic("data format is invalid") if @lines.elems != 2;
     my ($hash, $enc) = @lines;
-    my $key = MIME::Base64.decode($base64key);
+    my Blob $key = Base64Decode($base64key);
     my $dec = AES256.Decrypt($key, $enc);
     if $hash ne AES256.sha256sum($dec) {
         err("Decryption failed");
@@ -31,6 +30,14 @@ our sub Random(Int $length) {
 
 our sub Sha256($data) {
     return AES256.sha256sum($data);
+}
+
+our sub Base64Encode(Blob $data) {
+    return AES256.encode_base64($data);
+}
+
+our sub Base64Decode(Str $base64) {
+    return AES256.decode_base64($base64);
 }
 
 our sub GeneratePassword(Int $len, Bool :$special?) returns Str {

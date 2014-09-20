@@ -3,7 +3,6 @@ class Stomp::Key;
 use Stomp::Config;
 use Stomp::Utils;
 use Stomp::Daemon::Client;
-use MIME::Base64;
 
 has Str $!base64DecodedKey;
 
@@ -12,12 +11,12 @@ has Bool $.Locked is rw = True;
 method Smith() returns Stomp::Key {
     my $key = Stomp::Key.new();
     my $dk = Stomp::Daemon::Client.Command('key');
-    $key.Rekey(MIME::Base64.decode($dk<key>));
+    $key.Rekey(Stomp::Utils::Base64Decode($dk<key>));
     return $key;
 }
 
 method Rekey(Blob $key) {
-    $!base64DecodedKey = MIME::Base64.encode($key);
+    $!base64DecodedKey = Stomp::Utils::Base64Encode($key);
     $.Locked = False;
 }
 
@@ -30,15 +29,15 @@ method Decrypt(Str $data) {
 }
 
 method Lock() {
-    $!base64DecodedKey = MIME::Base64.encode(Stomp::Utils::Random(8192));
+    $!base64DecodedKey = Stomp::Utils::Base64Encode(Stomp::Utils::Random(8192));
     undefine $!base64DecodedKey;
     $.Locked = True;
 }
 
 method Unlock(Str $password) {
     my Str $enckey = readKey();
-    my $key = MIME::Base64.encode($password.encode);
-    $!base64DecodedKey = MIME::Base64.encode(Stomp::Utils::Decrypt($key, $enckey));
+    my $key = Stomp::Utils::Base64Encode($password.encode);
+    $!base64DecodedKey = Stomp::Utils::Base64Encode(Stomp::Utils::Decrypt($key, $enckey));
     $.Locked = False;
 } 
 
@@ -50,7 +49,7 @@ method Finish(Stomp::Key $obj is rw) {
     if $obj !~~ self {
         panic("object given to Finish() must be itself");
     }
-    $!base64DecodedKey = MIME::Base64.encode(Stomp::Utils::Random(8192));
+    $!base64DecodedKey = Stomp::Utils::Base64Encode(Stomp::Utils::Random(8192));
     undefine $!base64DecodedKey;
     undefine $obj;
 }
