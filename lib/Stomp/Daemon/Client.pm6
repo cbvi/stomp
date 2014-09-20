@@ -2,21 +2,21 @@ class Stomp::Daemon::Client;
 
 use Stomp::Utils;
 
-method Command(Str $command) {
-    return self.Dispatch($command);
+method command(Str $command) {
+    return self.dispatch($command);
 }
 
-method Dispatch(Str $command) {
+method dispatch(Str $command) {
     given $command {
-        when <lock> { self.Lock() }
-        when <unlock> { self.Unlock() }
-        when <key> { self.Key() }
-        when <shutdown> { self.Shutdown() }
-        default { self.Usage() }
+        when <lock> { self.lock() }
+        when <unlock> { self.unlock() }
+        when <key> { self.key() }
+        when <shutdown> { self.shutdown() }
+        default { self.usage() }
     }
 }
 
-method Lock() {
+method lock() {
     my $req = Stomp::Utils::prepare-request("lock");
     my $res = Stomp::Utils::do-request($req);
 
@@ -26,7 +26,7 @@ method Lock() {
     return $res;
 }
 
-method Unlock() {
+method unlock() {
     my $req = Stomp::Utils::prepare-request("unlock",
         password => Stomp::Utils::ask-password());
     my $res = Stomp::Utils::do-request($req);
@@ -40,7 +40,7 @@ method Unlock() {
     return $res;
 }
 
-method Key() {
+method key() {
     my $req = Stomp::Utils::prepare-request("key");
     my $result = Stomp::Utils::do-request($req);
     if $result<error> :exists && $result<error> eq <locked> {
@@ -50,7 +50,7 @@ method Key() {
     return $result;
 }
 
-method Shutdown() {
+method shutdown() {
     my $req = Stomp::Utils::prepare-request("shutdown");
     msg("server sent shutdown command");
     my $result = Stomp::Utils::do-request($req, :noreply);

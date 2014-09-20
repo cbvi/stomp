@@ -25,13 +25,13 @@ sub test_unlock {
 
 {
  test_unlock;
- my $cli = Stomp::Daemon::Client.Command('lock');
+ my $cli = Stomp::Daemon::Client.command('lock');
  is $cli<locked>, True, 'locked via command';
 }
 
 {
  test_unlock;
- my $cli = Stomp::Daemon::Client.Command('key');
+ my $cli = Stomp::Daemon::Client.command('key');
  ok $cli<key>, 'return key';
  my $key = Stomp::Key.new();
  $key.unlock('OxychromaticBlowfishSwatDynamite');
@@ -39,13 +39,13 @@ sub test_unlock {
 }
 
 {
- my $cli = Stomp::Daemon::Client.Command('shutdown');
+ my $cli = Stomp::Daemon::Client.command('shutdown');
  nok $cli, 'server was unable to send anything';
  ok 1, 'still alive after shutdown';
 }
 
 {
- dies_ok { Stomp::Daemon::Client.Command('lock') }, 'server is shutdown';
+ dies_ok { Stomp::Daemon::Client.command('lock') }, 'server is shutdown';
 }
 
 STHelper::StopServer();

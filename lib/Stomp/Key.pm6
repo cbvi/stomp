@@ -11,7 +11,7 @@ has Bool $.locked is rw = True;
 
 method smith() returns Stomp::Key {
     my $key = Stomp::Key.new();
-    my $dk = Stomp::Daemon::Client.Command('key');
+    my $dk = Stomp::Daemon::Client.command('key');
     $key.rekey(Stomp::Utils::base64-decode($dk<key>));
     return $key;
 }

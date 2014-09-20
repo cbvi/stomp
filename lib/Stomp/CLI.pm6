@@ -172,7 +172,7 @@ method generate(Str @options) {
 method admin(Str @options) {
     self.usage("must specify command to send to server") if @options.elems < 1;
     my $command = @options.shift;
-    Stomp::Daemon::Client.Command($command);
+    Stomp::Daemon::Client.command($command);
 }
 
 method setup() {
