@@ -22,7 +22,7 @@ our sub Decrypt(Blob $key, Str $data) {
     return $dec;
 }
 
-our sub Random(Int $length) {
+our sub Random(Int $length) returns Blob {
     return AES256.RandomBytes($length);
 }
 
@@ -44,15 +44,14 @@ our sub GeneratePassword(Int $len, Bool :$special?) returns Str {
 
     my Str $gen = '';
 
-    # FIXME use random_bytes once Inline::Perl5 can handle that properly
-    my $ur = open('/dev/urandom');
-
     while ($gen.chars < $len) {
-         my $bin = $ur.read(1);
-        my $s = $bin.list.fmt("%c", '');
-        $gen ~= $s.comb( / <$sym> /).join();
+        my Blob $bin = Random(1);
+        # decode as utf8 and ignore any malformed utf8 exceptions
+        try {
+            my $s = $bin.decode('utf8');
+            $gen ~= $s.comb( / <$sym> /).join();
+        }
     }
-    $ur.close();
     return $gen;
 }
 

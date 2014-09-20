@@ -28,8 +28,12 @@ method Decrypt(Blob $key, Str $data) {
     return $dec;
 }
 
-method RandomBytes(Int $len) returns Buf {
-    return $ip5.invoke('Crypt::CBC', 'random_bytes', $len);
+method RandomBytes(Int $len) returns Blob {
+    my $r = $ip5.invoke('Crypt::CBC', 'random_bytes', $len);
+    if $r !~~ Blob {
+        $r .= encode;
+    }
+    return $r;
 }
 
 method sha256sum($data) returns Str {
