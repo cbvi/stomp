@@ -22,7 +22,7 @@ method Encrypt(Str $key, Str $data) returns Str {
     return $enc;
 }
 
-method Decrypt(Str $key, Str $data) returns Str {
+method Decrypt(Str $key, Str $data) {
     my $CBC = cbc($key);
     my $dec = $CBC.decrypt_hex($data);
     return $dec;
@@ -41,6 +41,6 @@ method RandomBytes(Int $len) {
     return $ip5.call('main::randombytes', $len);
 }
 
-method sha256sum(Str $data) {
+method sha256sum($data) {
     return $ip5.call('Digest::SHA::sha256_hex', $data);
 }

@@ -12,7 +12,7 @@ our sub Encrypt(Str $key, Str $data) returns Str {
     return "$hash\n$enc";
 }
 
-our sub Decrypt(Str $key, Str $data) returns Str {
+our sub Decrypt(Str $key, Str $data) {
     my @lines = $data.lines;
     panic("data format is invalid") if @lines.elems != 2;
     my ($hash, $enc) = @lines;
