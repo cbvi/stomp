@@ -5,7 +5,7 @@ use Stomp::CLI;
 use Stomp::Utils;
 
 if not Stomp::Utils::is-setup() {
-    Stomp::CLI.Setup();
+    Stomp::CLI.setup();
 }
 
 Stomp::CLI.usage() if not @*ARGS[0];
