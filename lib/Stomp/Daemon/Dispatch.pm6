@@ -51,7 +51,11 @@ method !Key(%request, Stomp::Key $key) {
         return { error => 'locked' };
     }
     res('key', '<hidden>');
-    return { command => %request<command>, key => $key.Key() };
+
+    return {
+        command => %request<command>,
+        key => Stomp::Utils::Base64Encode($key.Key())
+    };
 }
 
 method !Shutdown(%request, $daemon) {

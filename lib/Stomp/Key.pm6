@@ -4,7 +4,7 @@ use Stomp::Config;
 use Stomp::Utils;
 use Stomp::Daemon::Client;
 
-has Str $!base64DecodedKey;
+has Blob $!DecodedKey;
 
 has Bool $.Locked is rw = True;
 
@@ -16,7 +16,7 @@ method Smith() returns Stomp::Key {
 }
 
 method Rekey(Blob $key) {
-    $!base64DecodedKey = Stomp::Utils::Base64Encode($key);
+    $!DecodedKey = $key;
     $.Locked = False;
 }
 
@@ -29,28 +29,28 @@ method Decrypt(Str $data) {
 }
 
 method Lock() {
-    $!base64DecodedKey = Stomp::Utils::Base64Encode(Stomp::Utils::Random(8192));
-    undefine $!base64DecodedKey;
+    $!DecodedKey = Stomp::Utils::Random(8192);
+    undefine $!DecodedKey;
     $.Locked = True;
 }
 
 method Unlock(Str $password) {
     my Str $enckey = readKey();
-    my $key = Stomp::Utils::Base64Encode($password.encode);
-    $!base64DecodedKey = Stomp::Utils::Base64Encode(Stomp::Utils::Decrypt($key, $enckey));
+    my $key = $password.encode;
+    $!DecodedKey = Stomp::Utils::Decrypt($key, $enckey);
     $.Locked = False;
 } 
 
-method Key() returns Str {
-    return $!base64DecodedKey // panic("Key object has been destroyed");
+method Key() returns Blob {
+    return $!DecodedKey // panic("Key object has been destroyed");
 }
 
 method Finish(Stomp::Key $obj is rw) {
     if $obj !~~ self {
         panic("object given to Finish() must be itself");
     }
-    $!base64DecodedKey = Stomp::Utils::Base64Encode(Stomp::Utils::Random(8192));
-    undefine $!base64DecodedKey;
+    $!DecodedKey = Stomp::Utils::Random(8192);
+    undefine $!DecodedKey;
     undefine $obj;
 }
 

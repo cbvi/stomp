@@ -44,7 +44,7 @@ dies_ok { $key.Decrypt($enc) }, 'dies decrypting with wrong key';
 my $reenc = $key.Encrypt($data);
 is $key.Decrypt($reenc), $data, 'correct data with modified key';
 
-$key.Rekey(Stomp::Utils::Base64Decode($original));
+$key.Rekey($original);
 is $key.Decrypt($enc), $data, 'changed key back';
 
 $key.Finish($key);

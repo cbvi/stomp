@@ -5,18 +5,16 @@ use JSON::Tiny;
 
 module Stomp::Utils;
 
-our sub Encrypt(Str $base64key, $data) returns Str {
-    my Blob $key = Base64Decode($base64key);
+our sub Encrypt(Blob $key, $data) returns Str {
     my $hash = AES256.sha256sum($data);
     my $enc = AES256.Encrypt($key, $data);
     return "$hash\n$enc";
 }
 
-our sub Decrypt(Str $base64key, Str $data) {
+our sub Decrypt(Blob $key, Str $data) {
     my @lines = $data.lines;
     panic("data format is invalid") if @lines.elems != 2;
     my ($hash, $enc) = @lines;
-    my Blob $key = Base64Decode($base64key);
     my $dec = AES256.Decrypt($key, $enc);
     if $hash ne AES256.sha256sum($dec) {
         err("Decryption failed");

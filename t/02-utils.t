@@ -3,7 +3,7 @@ use Stomp::Utils;
 
 plan 6;
 
-my $key = "Frumious Bandersnatch!";
+my $key = "Frumious Bandersnatch!".encode;
 my $data = "\"Beware the Jabberwock, my son!\nThe jaws that bite, the claws that catch!'";
 
 my $enc = Stomp::Utils::Encrypt($key, $data);

@@ -35,7 +35,7 @@ sub test_unlock {
  ok $cli<key>, 'return key';
  my $key = Stomp::Key.new();
  $key.Unlock('OxychromaticBlowfishSwatDynamite');
- is $cli<key>, $key.Key(), 'key matches';
+ is $cli<key>, Stomp::Utils::Base64Encode($key.Key()), 'key matches';
 }
 
 {
