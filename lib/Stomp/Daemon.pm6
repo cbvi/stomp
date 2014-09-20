@@ -21,7 +21,7 @@ method stop-collaborate-and-listen() {
     $!socket = IO::Socket::Async.listen($localhost, $localport);
     $!tap = $!socket.tap( -> $connection {
         $connection.chars_supply.tap( -> $message {
-            my $response = Stomp::Daemon::Dispatch.Command($message, self);
+            my $response = Stomp::Daemon::Dispatch.command($message, self);
             await $connection.send($response);
             $connection.close();
         });

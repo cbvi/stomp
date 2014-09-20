@@ -44,8 +44,8 @@ method key() {
     my $req = Stomp::Utils::prepare-request("key");
     my $result = Stomp::Utils::do-request($req);
     if $result<error> :exists && $result<error> eq <locked> {
-        self.Unlock();
-        return self.Key();
+        self.unlock();
+        return self.key();
     }
     return $result;
 }

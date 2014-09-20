@@ -3,29 +3,29 @@ class Stomp::Daemon::Dispatch;
 use JSON::Tiny;
 use Stomp::Key;
 
-method Command(Str $request, $daemon) returns Str {
-    my $response = self!DoSomething(from-json($request), $daemon);
+method command(Str $request, $daemon) returns Str {
+    my $response = self!do-something(from-json($request), $daemon);
     return to-json($response);
 }
 
-method !DoSomething(%request, $d) {
+method !do-something(%request, $d) {
     given %request<command> {
         when <unlock> {
-            self!Unlock(%request, $d.key);
+            self!unlock(%request, $d.key);
         }
         when <lock> {
-            self!Lock(%request, $d.key);
+            self!lock(%request, $d.key);
         }
         when <shutdown> {
-            self!Shutdown(%request, $d);
+            self!shutdown(%request, $d);
         }
         when <key> {
-            self!Key(%request, $d.key);
+            self!key(%request, $d.key);
         }
     }
 }
 
-method !Unlock(%request, Stomp::Key $key) {
+method !unlock(%request, Stomp::Key $key) {
     cmd('unlock');
     $key.unlock(%request<password>);
     res('locked', $key.locked);
@@ -36,14 +36,14 @@ method !Unlock(%request, Stomp::Key $key) {
     return { command => %request<command>, locked => $key.locked };
 }
 
-method !Lock(%request, Stomp::Key $key) {
+method !lock(%request, Stomp::Key $key) {
     cmd('lock');
     $key.lock();
     res('locked', $key.locked);
     return { command => %request<command>, locked => $key.locked };
 }
 
-method !Key(%request, Stomp::Key $key) {
+method !key(%request, Stomp::Key $key) {
     cmd('key');
     if $key.locked {
         res('error', 'locked');
@@ -57,7 +57,7 @@ method !Key(%request, Stomp::Key $key) {
     };
 }
 
-method !Shutdown(%request, $daemon) {
+method !shutdown(%request, $daemon) {
     cmd('shutdown');
     $daemon.shutdown();
     return { command => 'shutdown' };
