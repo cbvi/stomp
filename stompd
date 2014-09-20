@@ -5,4 +5,4 @@ use lib 'lib';
 use Stomp::Daemon;
 
 my $d = Stomp::Daemon.new();
-$d.StopCollaborateAndListen();
+$d.stop-collaborate-and-listen();

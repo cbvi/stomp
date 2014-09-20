@@ -11,6 +11,6 @@ my $d = Stomp::Daemon.new();
 
 spurt("t/server.pid", $*PID);
 
-$d.StopCollaborateAndListen();
+$d.stop-collaborate-and-listen();
 
 # vim: ft=perl6

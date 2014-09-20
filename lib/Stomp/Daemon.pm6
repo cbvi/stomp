@@ -14,7 +14,7 @@ has Stomp::Key $.Key;
 
 has Bool $!Running = True;
 
-method StopCollaborateAndListen() {
+method stop-collaborate-and-listen() {
     note "$*PROGRAM_NAME: starting...";
     $!Key = Stomp::Key.new();
 
@@ -35,7 +35,7 @@ method StopCollaborateAndListen() {
     note "$*PROGRAM_NAME: stopped";
 }
 
-method Shutdown() {
+method shutdown() {
     note "$*PROGRAM_NAME: stopping...";
     $!Key.Finish($!Key);
     $!Tap.close();

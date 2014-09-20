@@ -59,7 +59,7 @@ method !Key(%request, Stomp::Key $key) {
 
 method !Shutdown(%request, $daemon) {
     cmd('shutdown');
-    $daemon.Shutdown();
+    $daemon.shutdown();
     return { command => 'shutdown' };
 }
 
