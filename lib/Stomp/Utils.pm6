@@ -1,4 +1,4 @@
-use AES256;
+use Stomp::Crypt;
 use Stomp::Config;
 use Stomp::Exception;
 use JSON::Tiny;
@@ -6,8 +6,8 @@ use JSON::Tiny;
 module Stomp::Utils;
 
 our sub Encrypt(Blob $key, $data) returns Str {
-    my $hash = AES256.sha256sum($data);
-    my $enc = AES256.Encrypt($key, $data);
+    my $hash = Stomp::Crypt.sha256sum($data);
+    my $enc = Stomp::Crypt.Encrypt($key, $data);
     return "$hash\n$enc";
 }
 
@@ -15,27 +15,27 @@ our sub Decrypt(Blob $key, Str $data) {
     my @lines = $data.lines;
     panic("data format is invalid") if @lines.elems != 2;
     my ($hash, $enc) = @lines;
-    my $dec = AES256.Decrypt($key, $enc);
-    if $hash ne AES256.sha256sum($dec) {
+    my $dec = Stomp::Crypt.Decrypt($key, $enc);
+    if $hash ne Stomp::Crypt.sha256sum($dec) {
         err("Decryption failed");
     }
     return $dec;
 }
 
 our sub Random(Int $length) returns Blob {
-    return AES256.RandomBytes($length);
+    return Stomp::Crypt.RandomBytes($length);
 }
 
 our sub Sha256($data) {
-    return AES256.sha256sum($data);
+    return Stomp::Crypt.sha256sum($data);
 }
 
 our sub Base64Encode(Blob $data) {
-    return AES256.encode_base64($data);
+    return Stomp::Crypt.encode_base64($data);
 }
 
 our sub Base64Decode(Str $base64) {
-    return AES256.decode_base64($base64);
+    return Stomp::Crypt.decode_base64($base64);
 }
 
 our sub GeneratePassword(Int $len, Bool :$special?) returns Str {

@@ -1,6 +1,6 @@
 use Inline::Perl5;
 
-class AES256;
+class Stomp::Crypt;
 
 my $ip5 = Inline::Perl5.new();
 
