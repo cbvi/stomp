@@ -45,7 +45,7 @@ isnt $key.key(), $original, 'rekey changed the key';
 is Stomp::Utils::base64-encode($key.key()), $key.base64-key(),
     'rekeying resets the base64 key';
 
-dies_ok { $key.Decrypt($enc) }, 'dies decrypting with wrong key';
+dies_ok { $key.decrypt($enc) }, 'dies decrypting with wrong key';
 
 my $reenc = $key.encrypt($data);
 is $key.decrypt($reenc), $data, 'correct data with modified key';
