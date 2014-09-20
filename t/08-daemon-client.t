@@ -14,7 +14,7 @@ $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
-STHelper::StartServer();
+STHelper::start-server();
 
 # Client unlock requires typing a password
 sub test_unlock {
@@ -48,6 +48,6 @@ sub test_unlock {
  dies_ok { Stomp::Daemon::Client.command('lock') }, 'server is shutdown';
 }
 
-STHelper::StopServer();
+STHelper::stop-server();
 
 done();

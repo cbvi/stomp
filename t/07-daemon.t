@@ -12,7 +12,7 @@ $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
-STHelper::StartServer();
+STHelper::start-server();
 
 {
  my $req = Stomp::Utils::prepare-request("unlock",
@@ -66,6 +66,6 @@ STHelper::StartServer();
  dies_ok { Stomp::Utils::do-request($req) } , 'server is shutdown';
 }
 
-STHelper::StopServer();
+STHelper::stop-server();
 
 done();

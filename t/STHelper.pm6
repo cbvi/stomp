@@ -1,14 +1,14 @@
 module STHelper;
 
-our sub StartServer {
+our sub start-server {
     if "t/server.pid".IO.e {
-        StopServer(:nowait);
+        stop-server(:nowait);
     }
     shell("$*EXECUTABLE t/testserver.pl6 &");
     sleep(5);
 }
 
-our sub StopServer(Bool :$nowait?) {
+our sub stop-server(Bool :$nowait?) {
     sleep(5) if not $nowait;
     my $pid = slurp("t/server.pid");
     shell("kill -9 $pid");

@@ -13,7 +13,7 @@ $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
-STHelper::StartServer();
+STHelper::start-server();
 
 {
  # cheat to get the key unlocked so we can test without entering a password
@@ -38,6 +38,6 @@ STHelper::StartServer();
 
 # TODO figure out ways of testing the other functions
 
-STHelper::StopServer();
+STHelper::stop-server();
 
 done();
