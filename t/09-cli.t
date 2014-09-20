@@ -1,7 +1,9 @@
 use v6;
+use lib 't';
 use Test;
 use Stomp::Daemon;
 use Stomp::CLI;
+use STHelper;
 
 plan *;
 
@@ -11,10 +13,7 @@ $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
-my $d = Stomp::Daemon.new();
-my $t = Thread.new( code => { $d.StopCollaborateAndListen() } );
-
-$t.run();
+STHelper::StartServer();
 
 {
  # cheat to get the key unlocked so we can test without entering a password
@@ -38,5 +37,7 @@ $t.run();
 }
 
 # TODO figure out ways of testing the other functions
+
+STHelper::StopServer();
 
 done();

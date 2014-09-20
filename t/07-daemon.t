@@ -1,6 +1,8 @@
 use v6;
+use lib 't';
 use Test;
 use Stomp::Daemon;
+use STHelper;
 
 plan *;
 
@@ -10,10 +12,7 @@ $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
-my $d = Stomp::Daemon.new();
-my $t = Thread.new( code => { $d.StopCollaborateAndListen() } );
-
-$t.run();
+STHelper::StartServer();
 
 {
  my $req = Stomp::Utils::PrepareRequest("unlock",
@@ -66,5 +65,7 @@ $t.run();
  $req = Stomp::Utils::PrepareRequest("lock");
  dies_ok { Stomp::Utils::DoRequest($req) } , 'server is shutdown';
 }
+
+STHelper::StopServer();
 
 done();

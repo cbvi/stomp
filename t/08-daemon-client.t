@@ -1,8 +1,10 @@
 use v6;
+use lib 't';
 use Test;
 use Stomp::Daemon;
 use Stomp::Daemon::Client;
 use Stomp::Key;
+use STHelper;
 
 plan *;
 
@@ -12,10 +14,7 @@ $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
 
-my $d = Stomp::Daemon.new();
-my $t = Thread.new( code => { $d.StopCollaborateAndListen() } );
-
-$t.run();
+STHelper::StartServer();
 
 # Client unlock requires typing a password
 sub test_unlock {
@@ -48,5 +47,7 @@ sub test_unlock {
 {
  dies_ok { Stomp::Daemon::Client.Command('lock') }, 'server is shutdown';
 }
+
+STHelper::StopServer();
 
 done();
