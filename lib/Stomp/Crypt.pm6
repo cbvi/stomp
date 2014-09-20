@@ -16,19 +16,19 @@ sub cbc(Blob $key) {
     return $ip5.invoke('Crypt::CBC', 'new', $key, 'Crypt::OpenSSL::AES');
 }
 
-method Encrypt(Blob $key, $data) returns Str {
+method encrypt(Blob $key, $data) returns Str {
     my $CBC = cbc($key);
     my $enc = $CBC.encrypt_hex($data);
     return $enc;
 }
 
-method Decrypt(Blob $key, Str $data) {
+method decrypt(Blob $key, Str $data) {
     my $CBC = cbc($key);
     my $dec = $CBC.decrypt_hex($data);
     return $dec;
 }
 
-method RandomBytes(Int $len) returns Blob {
+method random-bytes(Int $len) returns Blob {
     my $r = $ip5.invoke('Crypt::CBC', 'random_bytes', $len);
     if $r !~~ Blob {
         $r .= encode;
@@ -36,15 +36,15 @@ method RandomBytes(Int $len) returns Blob {
     return $r;
 }
 
-method sha256sum($data) returns Str {
+method sha256-sum($data) returns Str {
     return $ip5.call('Digest::SHA::sha256_hex', $data);
 }
 
-method encode_base64(Blob $data) returns Str {
+method base64-encode(Blob $data) returns Str {
     return $ip5.call('MIME::Base64::encode_base64', $data);
 }
 
-method decode_base64(Str $base64) returns Blob {
+method base64-decode(Str $base64) returns Blob {
     my $decoded = $ip5.call('MIME::Base64::decode_base64', $base64);
     if $decoded !~~ Blob {
         $decoded .= encode;

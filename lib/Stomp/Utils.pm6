@@ -6,8 +6,8 @@ use JSON::Tiny;
 module Stomp::Utils;
 
 our sub encrypt(Blob $key, $data) returns Str {
-    my $hash = Stomp::Crypt.sha256sum($data);
-    my $enc = Stomp::Crypt.Encrypt($key, $data);
+    my $hash = Stomp::Crypt.sha256-sum($data);
+    my $enc = Stomp::Crypt.encrypt($key, $data);
     return "$hash\n$enc";
 }
 
@@ -15,27 +15,27 @@ our sub decrypt(Blob $key, Str $data) {
     my @lines = $data.lines;
     panic("data format is invalid") if @lines.elems != 2;
     my ($hash, $enc) = @lines;
-    my $dec = Stomp::Crypt.Decrypt($key, $enc);
-    if $hash ne Stomp::Crypt.sha256sum($dec) {
+    my $dec = Stomp::Crypt.decrypt($key, $enc);
+    if $hash ne Stomp::Crypt.sha256-sum($dec) {
         err("Decryption failed");
     }
     return $dec;
 }
 
 our sub random(Int $length) returns Blob {
-    return Stomp::Crypt.RandomBytes($length);
+    return Stomp::Crypt.random-bytes($length);
 }
 
 our sub sha256($data) {
-    return Stomp::Crypt.sha256sum($data);
+    return Stomp::Crypt.sha256-sum($data);
 }
 
 our sub base64-encode(Blob $data) {
-    return Stomp::Crypt.encode_base64($data);
+    return Stomp::Crypt.base64-encode($data);
 }
 
 our sub base64-decode(Str $base64) {
-    return Stomp::Crypt.decode_base64($base64);
+    return Stomp::Crypt.base64-decode($base64);
 }
 
 our sub generate-password(Int $len, Bool :$special?) returns Str {
