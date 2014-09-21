@@ -65,7 +65,7 @@ our sub remove(Stomp::Key $key, Str $sitename) returns Hash {
 }
 
 our sub setup(Str :$auto) {
-    header("Welcome to $*PROGRAM_NAME");
+    header("Welcome to {PROGNAME()}");
     msg('getting things ready...');
     xmkdir($Stomp::Config::RootDir);
     xchmod(0o700, $Stomp::Config::RootDir);

@@ -3,6 +3,7 @@ class Stomp::Daemon;
 use Stomp::Config;
 use Stomp::Daemon::Dispatch;
 use Stomp::Key;
+use Stomp::Utils;
 
 my Str $localhost = $Stomp::Config::Host;
 my Int $localport = $Stomp::Config::Port;
@@ -15,7 +16,7 @@ has Stomp::Key $.key;
 has Bool $!running = True;
 
 method stop-collaborate-and-listen() {
-    note "$*PROGRAM_NAME: starting...";
+    note "{PROGNAME()}: starting...";
     $!key = Stomp::Key.new();
 
     $!socket = IO::Socket::Async.listen($localhost, $localport);
@@ -27,16 +28,16 @@ method stop-collaborate-and-listen() {
         });
         Thread.yield();
     });
-    note "$*PROGRAM_NAME: started";
+    note "{PROGNAME()}: started";
     while ($!running) {
         Thread.yield();
         sleep(1);
     }
-    note "$*PROGRAM_NAME: stopped";
+    note "{PROGNAME()}: stopped";
 }
 
 method shutdown() {
-    note "$*PROGRAM_NAME: stopping...";
+    note "{PROGNAME()}: stopping...";
     $!key.finish($!key);
     $!tap.close();
     # FIXME 'Illegal attempt to pop empty temporary root stack'

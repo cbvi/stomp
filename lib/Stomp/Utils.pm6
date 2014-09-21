@@ -148,6 +148,10 @@ our sub ask-yes-or-no(Str $question, Bool :$yes?, Bool :$no?) returns Bool {
     return True if $input eq 'Y';
 }
 
+sub PROGNAME() returns Str is export {
+    return $*PROGRAM.basename;
+}
+
 sub header(Str $hdr) is export {
     say "=== $hdr ===";
 }

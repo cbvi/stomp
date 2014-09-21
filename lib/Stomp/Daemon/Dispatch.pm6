@@ -2,6 +2,7 @@ class Stomp::Daemon::Dispatch;
 
 use JSON::Tiny;
 use Stomp::Key;
+use Stomp::Utils;
 
 method command(Str $request, $daemon) returns Str {
     my $response = self!do-something(from-json($request), $daemon);
@@ -64,9 +65,9 @@ method !shutdown(%request, $daemon) {
 }
 
 sub cmd(Str $command) {
-    note "$*PROGRAM_NAME: received $command command";
+    note "{PROGNAME()}: received $command command";
 }
 
 sub res(Str $val, $res) {
-    note "$*PROGRAM_NAME: $val => $res";
+    note "{PROGNAME()}: $val => $res";
 }

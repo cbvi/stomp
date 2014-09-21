@@ -206,15 +206,16 @@ method setup() {
 }
 
 method usage(Str $hint?) {
+    my $prog = PROGNAME();
     msg($hint) if $hint;
-    say "\t$*PROGRAM_NAME add [-i] sitename username";
-    say "\t$*PROGRAM_NAME get sitename";
-    say "\t$*PROGRAM_NAME remove sitename";
-    say "\t$*PROGRAM_NAME find sitename";
-    say "\t$*PROGRAM_NAME list";
-    say "\t$*PROGRAM_NAME edit sitename";
-    say "\t$*PROGRAM_NAME gen [as] [length]";
-    say "\t$*PROGRAM_NAME clip|x sitename";
-    say "\t$*PROGRAM_NAME admin [lock|unlock|key|shutdown]";
+    say "\t$prog add [-i] sitename username";
+    say "\t$prog get sitename";
+    say "\t$prog remove sitename";
+    say "\t$prog find sitename";
+    say "\t$prog list";
+    say "\t$prog edit sitename";
+    say "\t$prog gen [as] [length]";
+    say "\t$prog clip|x sitename";
+    say "\t$prog admin [lock|unlock|key|shutdown]";
     exit(0);
 }
