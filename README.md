@@ -42,6 +42,20 @@ data.
     stomp edit <sitename>
     stomp gen
 
+## Prerequisites ##
+
+ - Perl 6
+
+    Inline::Perl5
+    Shell::Command
+
+ - Perl 5
+
+    Crypt::CBC
+    Crpyt::OpenSSL::AES
+    MIME::Base64
+    Digest::SHA
+
 ## License ##
 
     Copyright (c) 2014 Carlin Bingham <cb@viennan.net>
