@@ -53,8 +53,8 @@ data.
 
     - Crypt::CBC
     - Crypt::OpenSSL::AES
-    - MIME::Base64
     - Digest::SHA
+    - MIME::Base64
 
 ## License ##
 
