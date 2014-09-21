@@ -46,15 +46,15 @@ data.
 
  - Perl 6
 
-    Inline::Perl5
-    Shell::Command
+    - Inline::Perl5
+    - Shell::Command
 
  - Perl 5
 
-    Crypt::CBC
-    Crpyt::OpenSSL::AES
-    MIME::Base64
-    Digest::SHA
+    - Crypt::CBC
+    - Crypt::OpenSSL::AES
+    - MIME::Base64
+    - Digest::SHA
 
 ## License ##
 
