@@ -6,5 +6,5 @@ our $DataDir    = $RootDir ~ '/data';
 our $Index      = $RootDir ~ '/index';
 our $Key        = $KeyDir ~ '/stompkey';
 
-our $Port       = 70291;
+our $Port       = 7291;
 our $Host       = '127.0.0.1';
