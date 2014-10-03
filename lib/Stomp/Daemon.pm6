@@ -7,31 +7,23 @@ use Stomp::Utils;
 
 my Str $localhost = $Stomp::Config::Host;
 my Int $localport = $Stomp::Config::Port;
-
-has $!socket;
-has Tap $!tap;
-
+has IO::Socket::INET $!socket;
 has Stomp::Key $.key;
-
-has Bool $!running = True;
+has Bool $!running;
 
 method stop-collaborate-and-listen() {
     note "{PROGNAME()}: starting...";
     $!key = Stomp::Key.new();
 
-    $!socket = IO::Socket::Async.listen($localhost, $localport);
-    $!tap = $!socket.tap( -> $connection {
-        $connection.chars_supply.tap( -> $message {
-            my $response = Stomp::Daemon::Dispatch.command($message, self);
-            await $connection.send($response);
-            $connection.close();
-        });
-        Thread.yield();
-    });
+    $!socket = IO::Socket::INET.new(:$localhost, :$localport, :listen);
+    $!running = True;
     note "{PROGNAME()}: started";
-    while ($!running) {
-        Thread.yield();
-        sleep(1);
+
+    while ($!running && my $client = $!socket.accept()) {
+        my $message = $client.recv();
+        my $response = Stomp::Daemon::Dispatch.command($message, self);
+        $client.send($response);
+        $client.close();
     }
     note "{PROGNAME()}: stopped";
 }
@@ -39,8 +31,6 @@ method stop-collaborate-and-listen() {
 method shutdown() {
     note "{PROGNAME()}: stopping...";
     $!key.finish($!key);
-    $!tap.close();
-    # FIXME 'Illegal attempt to pop empty temporary root stack'
-    #$!Promise.keep(1);
     $!running = False;
+    $!socket.close();
 }
