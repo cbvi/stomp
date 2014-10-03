@@ -64,12 +64,7 @@ our sub do-request(Str $data, Bool :$noreply?) {
     }
     $sock.send($data ~ "\n");
 
-    my $response = '';
-    loop {
-        my $r = $sock.recv(1);
-        last if $r eq "";
-        $response ~= $r;
-    }
+    my $response = $sock.recv();
     $sock.close();
     return !$noreply ?? from-json($response) !! from-json('{ }');
 }
