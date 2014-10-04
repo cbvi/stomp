@@ -65,9 +65,9 @@ method !shutdown(%request, $daemon) {
 }
 
 sub cmd(Str $command) {
-    debug("{PROGNAME()}: received $command command");
+    debug("{PROGNAME()}: received $command command", 0);
 }
 
 sub res(Str $val, $res) {
-    debug("{PROGNAME()}: $val => $res");
+    debug("{PROGNAME()}: $val => $res", 0);
 }
