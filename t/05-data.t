@@ -4,7 +4,7 @@ use Stomp::Config;
 use Stomp::Key;
 use Shell::Command;
 
-plan 18;
+plan 21;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
@@ -81,6 +81,16 @@ $key.unlock('OxychromaticBlowfishSwatDynamite');
  is $expect, 3, 'found expected entries in list';
 
  is Stomp::Data::password($key, 'deepweb'), $later<password>, 'got password';
+}
+
+{
+ Stomp::Data::remove($key, 'deepweb');
+ dies_ok { Stomp::Data::get($key, 'deepweb') }, 'removed entry';
+
+ Stomp::Data::remove($key, 'foRTRAn');
+ dies_ok { Stomp::Data::get($key, 'fortran') }, 'case insensitive remove';
+
+ dies_ok { Stomp::Data::remove('zzfake') }, 'removing non-existent entry fails';
 }
 
 done();
