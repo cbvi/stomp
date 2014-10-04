@@ -4,7 +4,7 @@ use Stomp::Config;
 use Stomp::Key;
 use Shell::Command;
 
-plan 12;
+plan 14;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
@@ -43,12 +43,19 @@ $key.unlock('OxychromaticBlowfishSwatDynamite');
 {
  Stomp::Data::add($key, 'example.net', 'john');
  Stomp::Data::add($key, 'samples', 'cameron');
+ Stomp::Data::add($key, 'FORTRAN', 'polish');
 
  my @find = Stomp::Data::find($key, 'example');
  is @find.elems, 2, 'correct number of elements found';
 
  @find = Stomp::Data::find($key, 'ample');
  is @find.elems, 3, 'found 3 results';
+
+ @find = Stomp::Data::find($key, 'AMPLE');
+ is @find.elems, 3, 'found 3 results with case mismatching search term';
+
+ @find = Stomp::Data::find($key, 'fort');
+ is @find[0]<username>, 'polish', 'find is case sensitive';
 
  @find = Stomp::Data::find($key, "I am a little teapot");
  is @find.elems, 0, 'found no results';

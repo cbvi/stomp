@@ -40,7 +40,7 @@ our sub find(Stomp::Key $key, Str $searchterm) returns Array {
     my $index = Stomp::Index::get($key);
     my @found;
     for $index.kv -> $sitename, $filename {
-        if $sitename ~~ / $searchterm / {
+        if $sitename ~~ m:i/ $searchterm / {
             @found.push(get($key, $sitename, $filename));
         }
     }
