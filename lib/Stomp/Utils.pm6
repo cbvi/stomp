@@ -156,7 +156,7 @@ sub msg(Str $m) is export {
 }
 
 sub debug(Str $m) is export {
-    note $m;
+    note $m unless %*ENV<STOMP_QUIET>;
 }
 
 sub err(Str $e) is export {
