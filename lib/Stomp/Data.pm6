@@ -57,8 +57,7 @@ our sub list(Stomp::Key $key) returns Array {
 }
 
 our sub remove(Stomp::Key $key, Str $sitename) returns Hash {
-    my $index = Stomp::Index::get($key);
-    my $filename = $index{$sitename.lc} // err("$sitename does not exist");
+    my $filename = get-filename-from-index($key, $sitename);
     remove-data-file($filename);
     Stomp::Index::remove($key, $sitename);
     return { :$sitename };
