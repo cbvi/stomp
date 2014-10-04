@@ -155,7 +155,10 @@ sub msg(Str $m) is export {
     say "==> $m";
 }
 
-sub debug(Str $m) is export {
+sub debug(Str $m, Int $level = 0) is export {
+    if %*ENV<STOMP_DEBUG_LEVEL> && %*ENV<STOMP_DEBUG_LEVEL>.Int > $level {
+        return;
+    }
     note $m unless %*ENV<STOMP_QUIET>;
 }
 
