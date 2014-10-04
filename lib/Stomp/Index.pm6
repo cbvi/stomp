@@ -7,7 +7,7 @@ use JSON::Tiny;
 
 our sub update(Stomp::Key $key, Str $sitename, Str $filename) {
     my $index = from-json($key.decrypt(read()));
-    $index{$sitename} = $filename;
+    $index{$sitename.lc} = $filename;
     write($key.encrypt(to-json($index)));
 }
 
@@ -17,7 +17,7 @@ our sub get(Stomp::Key $key) {
 
 our sub remove(Stomp::Key $key, Str $sitename) {
     my $index = from-json($key.decrypt(read()));
-    $index{$sitename} :delete;
+    $index{$sitename.lc} :delete;
     write($key.encrypt(to-json($index)));
 }
 

@@ -81,7 +81,7 @@ method get(Str @options) {
     my $key = Stomp::Key.smith();
     my $data = Stomp::Data::get($key, $sitename);
 
-    header($sitename);
+    header($data<sitename>);
     for $data.kv -> $param, $value {
         say "$param: $value";
     }

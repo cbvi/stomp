@@ -9,8 +9,8 @@ use JSON::Tiny;
 our sub add(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
 returns Hash {
     my $index = Stomp::Index::get($key);
-    if $index{$sitename} :exists {
-        err("$sitename already exists");
+    if $index{$sitename.lc} :exists {
+        err("{$sitename.lc} already exists");
     }
     my Str $password = $pw // Stomp::Utils::generate-password(16);
     my Str %data =
@@ -58,7 +58,7 @@ our sub list(Stomp::Key $key) returns Array {
 
 our sub remove(Stomp::Key $key, Str $sitename) returns Hash {
     my $index = Stomp::Index::get($key);
-    my $filename = $index{$sitename} // err("$sitename does not exist");
+    my $filename = $index{$sitename.lc} // err("$sitename does not exist");
     remove-data-file($filename);
     Stomp::Index::remove($key, $sitename);
     return { :$sitename };
@@ -101,7 +101,17 @@ our sub password(Stomp::Key $key, Str $sitename) returns Str {
 
 sub get-filename-from-index(Stomp::Key $key, Str $sitename) {
     my $index = Stomp::Index::get($key);
-    return $index{$sitename} // err("cannot find $sitename");
+
+    if $index{$sitename.lc} :exists {
+        return $index{$sitename.lc};
+    }
+    else {
+        # back-compat hack for sites added to the index not lowercased
+        # this will be selfishly removed once _I_ no longer depend on it
+        # TODO remove this when no longer dependent
+        my $filename = $index.grep(*.key.lc eq $sitename.lc)[0].value;
+        return $filename // err("cannot find $sitename");
+    }
 }
 
 sub write-data-file(Str $filename, Str $data) {

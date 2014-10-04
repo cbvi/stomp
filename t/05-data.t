@@ -4,7 +4,7 @@ use Stomp::Config;
 use Stomp::Key;
 use Shell::Command;
 
-plan 14;
+plan 18;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
@@ -20,12 +20,21 @@ $key.unlock('OxychromaticBlowfishSwatDynamite');
 
 {
  Stomp::Data::add($key, 'example.org', 'dave', 'letmein123');
+ Stomp::Data::add($key, 'FORTRAN', 'polish');
 
  my $data = Stomp::Data::get($key, 'example.org');
 
  is $data<sitename>, 'example.org', 'got sitename back';
  is $data<username>, 'dave', 'got username back';
  is $data<password>, 'letmein123', 'got password back';
+
+ $data = Stomp::Data::get($key, 'fortran');
+ is $data<sitename>, 'FORTRAN', 'get ignores case';
+ is $data<username>, 'polish', 'correct data with ignored case';
+
+ $data = Stomp::Data::get($key, 'fORTran');
+ is $data<sitename>, 'FORTRAN', 'get with uppercase in requested name';
+ is $data<username>, 'polish', 'correct data with uppercase name';
 }
 
 {
@@ -43,7 +52,6 @@ $key.unlock('OxychromaticBlowfishSwatDynamite');
 {
  Stomp::Data::add($key, 'example.net', 'john');
  Stomp::Data::add($key, 'samples', 'cameron');
- Stomp::Data::add($key, 'FORTRAN', 'polish');
 
  my @find = Stomp::Data::find($key, 'example');
  is @find.elems, 2, 'correct number of elements found';
