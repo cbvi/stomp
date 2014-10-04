@@ -58,6 +58,7 @@ STHelper::start-server();
 {
  # FIXME shutting down the daemon in test causes weirdness, thread problem?
  my $req = Stomp::Utils::prepare-request("shutdown");
+ note '';
  Stomp::Utils::do-request($req);
  #skip 'Illegal attempt to pop empty temporary root stack';
  ok 1, 'still alive after shutdown';

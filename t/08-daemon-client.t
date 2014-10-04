@@ -39,6 +39,7 @@ sub test_unlock {
 }
 
 {
+ note '';
  my $cli = Stomp::Daemon::Client.command('shutdown');
  nok $cli, 'server was unable to send anything';
  ok 1, 'still alive after shutdown';

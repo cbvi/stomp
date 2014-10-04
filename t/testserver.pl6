@@ -1,7 +1,7 @@
 use v6;
 use Stomp::Daemon;
 
-%*ENV<STOMP_QUIET> = 1;
+%*ENV<STOMP_DEBUG_LEVEL> = 1;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
