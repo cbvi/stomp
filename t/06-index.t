@@ -2,8 +2,9 @@ use v6;
 use Test;
 use Stomp::Config;
 use Stomp::Index;
+use Stomp::Data;
 
-plan 2;
+plan 7;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
@@ -15,13 +16,60 @@ my $key = Stomp::Key.new();
 
 $key.unlock('OxychromaticBlowfishSwatDynamite');
 
-Stomp::Index::update($key, 'fakesite', 'NOT_A_REAL_FILE');
-my $index = Stomp::Index::get($key);
+{
+ Stomp::Index::update($key, 'fakesite', 'NOT_A_REAL_FILE');
+ my $index = Stomp::Index::get($key);
 
-is $index<fakesite>, 'NOT_A_REAL_FILE', 'added and got index result';
-$index{'fakesite'} :delete;
+ is $index<fakesite>, 'NOT_A_REAL_FILE', 'added and got index result';
+ $index{'fakesite'} :delete;
 
-my $path = "{$Stomp::Config::DataDir}/{$index.pick(1).value}";
-ok $path.IO.f, 'path to random file in index exists';
+ my $path = "{$Stomp::Config::DataDir}/{$index.pick(1).value}";
+ ok $path.IO.f, 'path to random file in index exists';
+}
+
+{
+ Stomp::Index::update($key, 'fakesiteagain', 'NOT_A_REAL_FILE_AGAIN');
+ my $index = Stomp::Index::get($key);
+ is $index<fakesiteagain>, 'NOT_A_REAL_FILE_AGAIN', 'entry was added';
+
+ Stomp::Index::remove($key, 'fakesiteagain');
+ $index = Stomp::Index::get($key);
+ nok $index{'fakesiteagain'} :exists, 'entry was removed';
+}
+
+{
+ Stomp::Index::update($key, 'MixedCaseName', 'MIXED_CASE_FAKE_FILE');
+ my $index = Stomp::Index::get($key);
+ my Bool $sanity = False;
+
+ for $index.kv -> $key, $value {
+    if $key ~~ m:i/ MixedCaseName / {
+        $sanity = True;
+    }
+ }
+ ok $sanity, 'entry was added and can be checked using this method';
+}
+
+{
+ Stomp::Index::remove($key, 'mixedcaseNAME');
+ my $index = Stomp::Index::get($key);
+ my Bool $okay = True;
+
+ for $index.kv -> $key, $value {
+    if $key ~~ m:i/ MixedCaseName / {
+        $okay = False;
+    }
+ }
+ ok $okay, 'removed entry added with mixed case name';
+}
+
+{
+ Stomp::Data::add($key, 'testdataindex', 'INDEX_DATA_FILE');
+ Stomp::Data::remove($key, 'TESTdataINDEX');
+ my $index = Stomp::Index::get($key);
+ nok $index{'testdataindex'} :exists, 'Data::remove removes from index';
+}
 
 done();
+
+# vim: ft=perl6
