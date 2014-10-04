@@ -155,6 +155,10 @@ sub msg(Str $m) is export {
     say "==> $m";
 }
 
+sub debug(Str $m) is export {
+    note $m;
+}
+
 sub err(Str $e) is export {
     my $message = "==> $e";
     Stomp::Exception.new(:$message).throw;

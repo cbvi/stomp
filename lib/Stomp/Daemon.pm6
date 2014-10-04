@@ -12,12 +12,12 @@ has Stomp::Key $.key;
 has Bool $!running;
 
 method stop-collaborate-and-listen() {
-    note "{PROGNAME()}: starting...";
+    debug("{PROGNAME()}: starting...");
     $!key = Stomp::Key.new();
 
     $!socket = IO::Socket::INET.new(:$localhost, :$localport, :listen);
     $!running = True;
-    note "{PROGNAME()}: started";
+    debug("{PROGNAME()}: started");
 
     while ($!running && my $client = $!socket.accept()) {
         my $message = $client.recv();
@@ -25,11 +25,11 @@ method stop-collaborate-and-listen() {
         $client.send($response);
         $client.close();
     }
-    note "{PROGNAME()}: stopped";
+    debug("{PROGNAME()}: stopped");
 }
 
 method shutdown() {
-    note "{PROGNAME()}: stopping...";
+    debug("{PROGNAME()}: stopping...");
     $!key.finish($!key);
     $!running = False;
     $!socket.close();
