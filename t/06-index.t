@@ -4,7 +4,7 @@ use Stomp::Config;
 use Stomp::Index;
 use Stomp::Data;
 
-plan 7;
+plan 9;
 
 $Stomp::Config::RootDir = 't/testdir';
 $Stomp::Config::KeyDir = 't/testdir/keys';
@@ -68,6 +68,17 @@ $key.unlock('OxychromaticBlowfishSwatDynamite');
  Stomp::Data::remove($key, 'TESTdataINDEX');
  my $index = Stomp::Index::get($key);
  nok $index{'testdataindex'} :exists, 'Data::remove removes from index';
+}
+
+{
+ Stomp::Data::add($key, 'ShouldBeDeleted', 'DELETED_DATA_FILE');
+ my $index = Stomp::Index::get($key);
+ my $filename = $index<shouldbedeleted>;
+ my $path = $Stomp::Config::DataDir ~ '/' ~ $filename;
+
+ ok $path.IO.e, 'data file exists';
+ Stomp::Data::remove($key, 'ShouldbeDELETED');
+ nok $path.IO.e, 'data file deleted';
 }
 
 done();
