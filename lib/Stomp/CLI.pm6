@@ -102,12 +102,21 @@ method find(Str @options) {
     my $key = Stomp::Key.smith();
     my @data = Stomp::Data::find($key, $search);
 
-    for @data -> $site {
-        my $s = $site<sitename>;
-        print $s;
-        print " " xx ($s.chars < 16 ?? 16 - $s.chars !! 16);
-        print "({$site<username>})";
-        say();
+    if @data.elems == 1 {
+        my $site = @data[0];
+        header($site<sitename>);
+        for $site.kv -> $param, $value {
+            say "$param: $value";
+        }
+    }
+    else {
+        for @data -> $site {
+            my $s = $site<sitename>;
+            print $s;
+            print " " xx ($s.chars < 16 ?? 16 - $s.chars !! 16);
+            print "({$site<username>})";
+            say();
+        }
     }
 }
 
