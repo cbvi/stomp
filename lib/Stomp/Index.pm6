@@ -21,6 +21,16 @@ our sub remove(Stomp::Key $key, Str $sitename) {
     write($key.encrypt(to-json($index)));
 }
 
+our sub get-filename(Stomp::Key $key, Str $sitename) {
+    my $index = get($key);
+    return $index{$sitename.lc} // err("cannot find $sitename");
+}
+
+our sub contains(Stomp::Key $key, Str $sitename) returns Bool {
+    my $index = get($key);
+    return $index{$sitename.lc} :exists;
+}
+
 sub read {
     return xslurp($Stomp::Config::Index);
 }

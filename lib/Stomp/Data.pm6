@@ -8,8 +8,7 @@ use JSON::Tiny;
 
 our sub add(Stomp::Key $key, Str $sitename, Str $username, Str $pw?)
 returns Hash {
-    my $index = Stomp::Index::get($key);
-    if $index{$sitename.lc} :exists {
+    if Stomp::Index::contains($key, $sitename) {
         err("{$sitename.lc} already exists");
     }
     my Str $password = $pw // Stomp::Utils::generate-password(16);
@@ -25,13 +24,13 @@ returns Hash {
 }
 
 our sub edit(Stomp::Key $key, Str $sitename, %data) returns Hash {
-    my $filename = get-filename-from-index($key, $sitename);
+    my $filename = Stomp::Index::get-filename($key, $sitename);
     write-data-file($filename, $key.encrypt(to-json(%data)));
     return %data;
 }
 
 our sub get(Stomp::Key $key, Str $sitename, Str $fn?) returns Hash {
-    my $filename = $fn // get-filename-from-index($key, $sitename);
+    my $filename = $fn // Stomp::Index::get-filename($key, $sitename);
     my $data = from-json($key.decrypt(read-data-file($filename)));
     return $data;
 }
@@ -57,7 +56,7 @@ our sub list(Stomp::Key $key) returns Array {
 }
 
 our sub remove(Stomp::Key $key, Str $sitename) returns Hash {
-    my $filename = get-filename-from-index($key, $sitename);
+    my $filename = Stomp::Index::get-filename($key, $sitename);
     remove-data-file($filename);
     Stomp::Index::remove($key, $sitename);
     return { :$sitename };
@@ -96,11 +95,6 @@ our sub setup(Str :$auto) {
 
 our sub password(Stomp::Key $key, Str $sitename) returns Str {
     return get($key, $sitename)<password>;
-}
-
-sub get-filename-from-index(Stomp::Key $key, Str $sitename) {
-    my $index = Stomp::Index::get($key);
-    return $index{$sitename.lc};
 }
 
 sub write-data-file(Str $filename, Str $data) {
