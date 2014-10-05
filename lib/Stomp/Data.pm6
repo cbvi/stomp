@@ -100,17 +100,7 @@ our sub password(Stomp::Key $key, Str $sitename) returns Str {
 
 sub get-filename-from-index(Stomp::Key $key, Str $sitename) {
     my $index = Stomp::Index::get($key);
-
-    if $index{$sitename.lc} :exists {
-        return $index{$sitename.lc};
-    }
-    else {
-        # back-compat hack for sites added to the index not lowercased
-        # this will be selfishly removed once _I_ no longer depend on it
-        # TODO remove this when no longer dependent
-        my $filename = $index.grep(*.key.lc eq $sitename.lc)[0].value;
-        return $filename // err("cannot find $sitename");
-    }
+    return $index{$sitename.lc};
 }
 
 sub write-data-file(Str $filename, Str $data) {
