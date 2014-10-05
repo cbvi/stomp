@@ -70,9 +70,7 @@ method edit(Str @options) {
     header($sitename);
     msg("updated");
 
-    for $data.kv -> $param, $value {
-        say "$param: $value";
-    }
+    show-site($data);
 }
 
 method get(Str @options) {
@@ -82,9 +80,7 @@ method get(Str @options) {
     my $data = Stomp::Data::get($key, $sitename);
 
     header($data<sitename>);
-    for $data.kv -> $param, $value {
-        say "$param: $value";
-    }
+    show-site($data);
 }
 
 method remove(Str @options) {
@@ -105,9 +101,7 @@ method find(Str @options) {
     if @data.elems == 1 {
         my $site = @data[0];
         header($site<sitename>);
-        for $site.kv -> $param, $value {
-            say "$param: $value";
-        }
+        show-site($site);
     }
     else {
         for @data -> $site {
@@ -227,4 +221,10 @@ method usage(Str $hint?) {
     say "\t$prog clip|x sitename";
     say "\t$prog admin [lock|unlock|key|shutdown]";
     exit(0);
+}
+
+sub show-site(%site) {
+    for %site.kv -> $param, $value {
+        say "$param: $value";
+    }
 }
