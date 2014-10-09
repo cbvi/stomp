@@ -39,6 +39,7 @@ method add(Str @options) {
     header($sitename);
     msg("added");
     say $data<password> if not $interactive;
+    return True;
 }
 
 method edit(Str @options) {
@@ -71,6 +72,7 @@ method edit(Str @options) {
     msg("updated");
 
     show-site($data);
+    return True;
 }
 
 method get(Str @options) {
@@ -81,6 +83,7 @@ method get(Str @options) {
 
     header($data<sitename>);
     show-site($data);
+    return True;
 }
 
 method remove(Str @options) {
@@ -91,6 +94,7 @@ method remove(Str @options) {
     err("aborted!") if not $sure;
     Stomp::Data::remove($key, $sitename);
     msg("removed $sitename");
+    return True;
 }
 
 method find(Str @options) {
@@ -112,6 +116,7 @@ method find(Str @options) {
             say();
         }
     }
+    return True;
 }
 
 method list(Str @options) {
@@ -124,6 +129,7 @@ method list(Str @options) {
         print "({$site<username>})";
         say();
     }
+    return True;
 }
 
 method clip(Str @options) {
@@ -132,6 +138,7 @@ method clip(Str @options) {
     my $key = Stomp::Key.smith();
     my $password = Stomp::Data::password($key, $sitename);
     say $password;
+    return True;
 }
 
 method generate(Str @options) {
@@ -171,12 +178,14 @@ method generate(Str @options) {
     my Bool $special = $set eq 'a' ?? False !! True;
     my $length = $len.Int;
     say Stomp::Utils::generate-password($length, :$special);
+    return True;
 }
 
 method admin(Str @options) {
     self.usage("must specify command to send to server") if @options.elems < 1;
     my $command = @options.shift;
     Stomp::Daemon::Client.command($command);
+    return True;
 }
 
 method obliterate(Str @options) {
@@ -202,10 +211,12 @@ method obliterate(Str @options) {
     else {
         err("orbital bombardment aborted!");
     }
+    return True;
 }
 
 method setup() {
     Stomp::Data::setup();
+    return True;
 }
 
 method usage(Str $hint?) {
@@ -227,4 +238,5 @@ sub show-site(%site) {
     for %site.kv -> $param, $value {
         say "$param: $value";
     }
+    return True;
 }
