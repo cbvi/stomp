@@ -11,6 +11,7 @@ $Stomp::Config::KeyDir = 't/testdir/keys';
 $Stomp::Config::DataDir = 't/testdir/data';
 $Stomp::Config::Index = 't/testdir/index';
 $Stomp::Config::Key = 't/testdir/keys/stompkey';
+$Stomp::Config::Hooks = 't/testdir/hooks';
 
 STHelper::start-server();
 
