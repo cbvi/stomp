@@ -13,6 +13,12 @@ Stomp::CLI.usage() if not @*ARGS[0];
 my Str $command = @*ARGS.shift;
 my Str @options = @*ARGS;
 
-Stomp::CLI.command($command, @options);
+my $result = Stomp::CLI.command($command, @options);
+
+if $result {
+    use Stomp::Config;
+    require Hooks:file<<$Stomp::Config::Hooks>> <&hook>;
+    hook($command);
+}
 
 # vim: ft=perl6

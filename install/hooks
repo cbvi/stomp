@@ -1,0 +1,9 @@
+use v6;
+
+module Hooks {
+    sub hook(Str $command) is export {
+        # your code goes here
+    }
+}
+
+# vim: ft=perl6

@@ -88,6 +88,8 @@ our sub setup(Str :$auto) {
     xwrite($fh, $skey.encrypt('{ }'));
     xclose($fh);
 
+    copy('install/hooks', $Stomp::Config::Hooks);
+
     msg("all done, have fun!");
     exit(0) if not $auto;
     True; # return True when auto is enabled to help tests
