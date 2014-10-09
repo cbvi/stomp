@@ -1,17 +1,14 @@
 use v6;
 use Test;
+use lib 't';
+use STHelper;
 use Stomp::Config;
 use Stomp::Index;
 use Stomp::Data;
 
 plan 9;
 
-$Stomp::Config::RootDir = 't/testdir';
-$Stomp::Config::KeyDir = 't/testdir/keys';
-$Stomp::Config::DataDir = 't/testdir/data';
-$Stomp::Config::Index = 't/testdir/index';
-$Stomp::Config::Key = 't/testdir/keys/stompkey';
-$Stomp::Config::Hooks = 't/testdir/hooks';
+set-config();
 
 my $key = Stomp::Key.new();
 

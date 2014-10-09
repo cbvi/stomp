@@ -6,13 +6,7 @@ use STHelper;
 
 plan *;
 
-$Stomp::Config::RootDir = 't/testdir';
-$Stomp::Config::KeyDir = 't/testdir/keys';
-$Stomp::Config::DataDir = 't/testdir/data';
-$Stomp::Config::Index = 't/testdir/index';
-$Stomp::Config::Key = 't/testdir/keys/stompkey';
-$Stomp::Config::Hooks = 't/testdir/hooks';
-
+set-config();
 STHelper::start-server();
 
 {
