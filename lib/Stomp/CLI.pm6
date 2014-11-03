@@ -204,7 +204,7 @@ method obliterate(Str @options) {
             msg("I hope you do not regret this decision");
         }
         else {
-            err("there still appears to still be some signs of life");
+            err("there appears to still be some signs of life");
             err("you have to manually clean up");
         }
     }
