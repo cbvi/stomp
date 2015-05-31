@@ -2,6 +2,10 @@
 
 A commandline-based password manager writen in Perl 6 (and some Perl 5 using Inline::Perl5)
 
+## Warning ##
+
+I don't use this and never seriously used it and I don't recommend anyone else use it.
+
 ## Overview ##
 
 stomp consists of two parts; stomp (the client) and stompd (the 'server')
